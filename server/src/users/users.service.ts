@@ -6,6 +6,8 @@ import {
   CreateAccountInput,
   CreateAccountOutput,
 } from './dtos/create-account.dto';
+import { LoginInput } from './dtos/login.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -27,6 +29,25 @@ export class UsersService {
       return { ok: true };
     } catch (e) {
       return { ok: false, error: 'Could not create account.' };
+    }
+  }
+
+  async login(
+    loginInput: LoginInput,
+  ): Promise<{ ok: boolean; error?: string; token?: string }> {
+    const { email, password } = loginInput;
+    try {
+      const user = await this.users.findOne({ where: { email } });
+      if (!user) {
+        return { ok: false, error: 'Incorrect email' };
+      }
+      const passwordCorrect = await user.checkPassword(password);
+      if (!passwordCorrect) {
+        return { ok: false, error: 'Incorrect password' };
+      }
+      return { ok: true, token: 'token' };
+    } catch (error) {
+      return { ok: false, error };
     }
   }
 }
