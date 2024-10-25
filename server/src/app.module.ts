@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { RestaurantsModule } from './restaurants/restaurants.module';
 import { Restaurant } from './restaurants/entities/restaurant.entity';
+import { JwtModule } from './jwt/jwt.module';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { Restaurant } from './restaurants/entities/restaurant.entity';
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== 'prod',
       logging: process.env.NODE_ENV !== 'prod',
-      entities: [User, Restaurant],
+      entities: [User],
     }),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -37,11 +38,12 @@ import { Restaurant } from './restaurants/entities/restaurant.entity';
         DB_PORT: Joi.string().required(),
         DB_USER: Joi.string().required(),
         DB_PASS: Joi.string(),
+        SECRET_KEY: Joi.string().required(),
       }),
     }),
     UsersModule,
-    RestaurantsModule,
     CommonModule,
+    JwtModule.forRoot({ privateKey: process.env.SECRET_KEY }),
   ],
   controllers: [],
   providers: [],
