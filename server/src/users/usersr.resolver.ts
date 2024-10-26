@@ -6,6 +6,9 @@ import {
   CreateAccountOutput,
 } from './dtos/create-account.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthUser } from 'src/auth/auth.decorator';
 @Resolver((of) => User)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
@@ -36,5 +39,11 @@ export class UsersResolver {
     } catch (error) {
       return { ok: false, error };
     }
+  }
+
+  @Query((returns) => User)
+  @UseGuards(AuthGuard)
+  async me(@AuthUser() authUser: User) {
+    return authUser;
   }
 }
