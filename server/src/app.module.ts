@@ -13,6 +13,7 @@ import { JwtModule } from './jwt/jwt.module';
 import { JwtMiddleware } from './jwt/jwt.middleware';
 import { AuthModule } from './auth/auth.module';
 import { Verification } from './users/entities/verification';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -43,11 +44,19 @@ import { Verification } from './users/entities/verification';
         DB_USER: Joi.string().required(),
         DB_PASS: Joi.string(),
         SECRET_KEY: Joi.string().required(),
+        MAILGUN_API_KEY: Joi.string().required(),
+        MAILGUN_DOMAIN: Joi.string().required(),
+        MAILGUN_FROM_EMAIL: Joi.string().required(),
       }),
     }),
     UsersModule,
     JwtModule.forRoot({ privateKey: process.env.SECRET_KEY }),
     AuthModule,
+    MailModule.forRoot({
+      apiKey: process.env.MAILGUN_API_KEY,
+      domain: process.env.MAILGUN_DOMAIN,
+      fromEmail: process.env.MAILGUN_FROM_EMAIL,
+    }),
   ],
   controllers: [],
   providers: [],

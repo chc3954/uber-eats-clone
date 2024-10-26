@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtModuleOptions } from './jwt.interfaces';
-import { JWT_OPTIONS } from './jwt.constants';
+import { JWT_OPTIONS } from '../common/common.constants';
 import * as jwt from 'jsonwebtoken';
 
 @Injectable()
