@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from 'src/jwt/jwt.service';
+import { EditProfileInput } from './dtos/edit-profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -56,5 +57,14 @@ export class UsersService {
 
   async findById(id: number): Promise<User | undefined> {
     return this.users.findOne({ where: { id } });
+  }
+
+  async editProfile(userId: number, editProfileInput: EditProfileInput) {
+    const user = await this.users.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException();
+    }
+    Object.assign(user, editProfileInput);
+    return this.users.save(user);
   }
 }
