@@ -90,7 +90,7 @@ export class UserService {
         const verification = await this.verifications.save(
           this.verifications.create({ user }),
         );
-        this.mailService.sendVerificationEmail(email, verification.code);
+        this.mailService.sendVerificationEmail(user.email, verification.code);
       }
       if (password) {
         user.password = password;
