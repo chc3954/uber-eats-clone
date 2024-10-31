@@ -32,7 +32,7 @@ export class UserService {
     try {
       const exists = await this.users.findOne({ where: { email } });
       if (exists) {
-        return { ok: false, error: 'There is a user with that email already' };
+        return { ok: false, error: 'There is a user with that email already.' };
       }
       const user = await this.users.save(
         this.users.create({ email, password, role }),
@@ -42,7 +42,7 @@ export class UserService {
       );
       this.mailService.sendVerificationEmail(email, verification.code);
       return { ok: true };
-    } catch (e) {
+    } catch {
       return { ok: false, error: 'Could not create account.' };
     }
   }
@@ -55,29 +55,26 @@ export class UserService {
         select: ['id', 'password'],
       });
       if (!user) {
-        return { ok: false, error: 'Incorrect email' };
+        return { ok: false, error: 'Incorrect email.' };
       }
       const passwordCorrect = await user.checkPassword(password);
       if (!passwordCorrect) {
-        return { ok: false, error: 'Incorrect password' };
+        return { ok: false, error: 'Incorrect password.' };
       }
       const token = this.jwtService.sign(user.id);
       console.log(token);
       return { ok: true, token };
-    } catch (error) {
-      return { ok: false, error };
+    } catch {
+      return { ok: false, error: 'Could not log user in.' };
     }
   }
 
   async findById(id: number): Promise<UserProfileOutput> {
     try {
-      const user = await this.users.findOne({ where: { id } });
-      if (!user) {
-        return { ok: false, error: 'User not found' };
-      }
+      const user = await this.users.findOneOrFail({ where: { id } });
       return { ok: true, user };
-    } catch (error) {
-      return { ok: false, error: 'Could not find user' };
+    } catch {
+      return { ok: false, error: 'Could not find user.' };
     }
   }
 
@@ -100,7 +97,7 @@ export class UserService {
       }
       await this.users.save(user);
       return { ok: true };
-    } catch (error) {
+    } catch {
       return { ok: false, error: 'Could not update profile.' };
     }
   }
@@ -118,8 +115,7 @@ export class UserService {
         return { ok: true };
       }
       throw new Error();
-    } catch (e) {
-      console.log(e);
+    } catch {
       return { ok: false, error: 'Could not verify email.' };
     }
   }

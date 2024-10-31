@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 
 const mockRepo = () => ({
   findOne: jest.fn(),
+  findOneOrFail: jest.fn(),
   save: jest.fn(),
   create: jest.fn(),
 });
@@ -75,7 +76,7 @@ describe('UserService', () => {
       const result = await service.createAccount(createAccountArgs);
       expect(result).toEqual({
         ok: false,
-        error: 'There is a user with that email already',
+        error: 'There is a user with that email already.',
       });
     });
 
@@ -142,7 +143,7 @@ describe('UserService', () => {
       });
       expect(result).toEqual({
         ok: false,
-        error: 'Incorrect email',
+        error: 'Incorrect email.',
       });
     });
 
@@ -155,7 +156,7 @@ describe('UserService', () => {
 
       expect(result).toEqual({
         ok: false,
-        error: 'Incorrect password',
+        error: 'Incorrect password.',
       });
     });
 
@@ -179,12 +180,33 @@ describe('UserService', () => {
       const result = await service.login(loginArgs);
       expect(result).toEqual({
         ok: false,
-        error: expect.any(Error),
+        error: 'Could not log user in.',
       });
     });
   });
 
-  it.todo('findById');
+  describe('findById', () => {
+    it('should find a existing user', async () => {
+      userRepo.findOneOrFail.mockResolvedValue({
+        id: 1,
+      });
+      const result = await service.findById(1);
+      expect(result).toEqual({
+        ok: true,
+        user: { id: 1 },
+      });
+    });
+
+    it('should fail if no user is found', async () => {
+      userRepo.findOneOrFail.mockRejectedValue(new Error('test'));
+      const result = await service.findById(1);
+      expect(result).toEqual({
+        ok: false,
+        error: 'Could not find user.',
+      });
+    });
+  });
+
   it.todo('editProfile');
   it.todo('verifyEmail');
 });
