@@ -6,12 +6,14 @@ import { Verification } from './entities/verification';
 import { JwtService } from 'src/jwt/jwt.service';
 import { MailService } from 'src/mail/mail.service';
 import { Repository } from 'typeorm';
+import exp from 'constants';
 
 const mockRepo = () => ({
   findOne: jest.fn(),
   findOneOrFail: jest.fn(),
   save: jest.fn(),
   create: jest.fn(),
+  delete: jest.fn(),
 });
 
 const mockJwtService = () => ({
@@ -272,5 +274,45 @@ describe('UserService', () => {
     });
   });
 
-  it.todo('verifyEmail');
+  describe('verifyEmail', () => {
+    it('should verify email', async () => {
+      const mockedVerification = {
+        id: 1,
+        user: { verified: false },
+      };
+      verificationRepo.findOne.mockResolvedValue(mockedVerification);
+
+      const result = await service.verifyEmail('');
+
+      expect(verificationRepo.findOne).toHaveBeenCalledTimes(1);
+      expect(verificationRepo.findOne).toHaveBeenCalledWith({
+        where: { code: '' },
+        relations: ['user'],
+      });
+
+      expect(userRepo.save).toHaveBeenCalledTimes(1);
+      expect(userRepo.save).toHaveBeenCalledWith({ verified: true });
+
+      expect(verificationRepo.delete).toHaveBeenCalledTimes(1);
+      expect(verificationRepo.delete).toHaveBeenCalledWith(
+        mockedVerification.id,
+      );
+
+      expect(result).toEqual({ ok: true });
+    });
+
+    it('should fail if verification not found', async () => {
+      verificationRepo.findOne.mockResolvedValue(null);
+      const result = await service.verifyEmail('');
+
+      expect(result).toEqual({ ok: false, error: 'Could not verify email.' });
+    });
+
+    it('should fail on exception', async () => {
+      verificationRepo.findOne.mockRejectedValue(new Error('test'));
+      const result = await service.verifyEmail('');
+
+      expect(result).toEqual({ ok: false, error: 'Could not verify email.' });
+    });
+  });
 });
