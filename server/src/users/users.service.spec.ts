@@ -89,6 +89,10 @@ describe('UserService', () => {
       });
     });
 
+    it('should be defined', () => {
+      expect(service).toBeDefined();
+    });
+
     it('should create a new user and return it', async () => {
       // Mock the database calls
       userRepo.findOne.mockResolvedValue(undefined);
