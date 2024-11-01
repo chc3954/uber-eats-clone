@@ -78,11 +78,16 @@ describe('UserService', () => {
     };
 
     it('should fail if user exists', async () => {
+      // Arrange
       userRepo.findOne.mockResolvedValue({
         id: 1,
         email: 'test@test.com',
       });
+
+      // Act
       const result = await service.createAccount(createAccountArgs);
+
+      // Assert
       expect(result).toEqual({
         ok: false,
         error: 'There is a user with that email already.',
@@ -94,7 +99,7 @@ describe('UserService', () => {
     });
 
     it('should create a new user and return it', async () => {
-      // Mock the database calls
+      // Arrange
       userRepo.findOne.mockResolvedValue(undefined);
       userRepo.create.mockReturnValue(createAccountArgs);
       userRepo.save.mockResolvedValue(createAccountArgs);
@@ -104,10 +109,10 @@ describe('UserService', () => {
         code: 'code',
       });
 
-      // Call the service
+      // Act
       const result = await service.createAccount(createAccountArgs);
 
-      // Check if the result is correct
+      // Assert
       expect(userRepo.create).toHaveBeenCalledTimes(1);
       expect(userRepo.create).toHaveBeenCalledWith(createAccountArgs);
       expect(userRepo.save).toHaveBeenCalledTimes(1);
@@ -127,8 +132,13 @@ describe('UserService', () => {
     });
 
     it('should fail on exception', async () => {
+      // Arrange
       userRepo.findOne.mockRejectedValue(new Error('test'));
+
+      // Act
       const result = await service.createAccount(createAccountArgs);
+
+      // Assert
       expect(result).toEqual({
         ok: false,
         error: 'Could not create account.',
@@ -143,13 +153,13 @@ describe('UserService', () => {
     };
 
     it('should fail if user does not exist', async () => {
-      // Mock the database call
+      // Arrange
       userRepo.findOne.mockResolvedValue(null);
 
-      // Call the service
+      // Act
       const result = await service.login(loginArgs);
 
-      // Check if the result is correct
+      // Assert
       expect(userRepo.findOne).toHaveBeenCalledTimes(1);
       expect(userRepo.findOne).toHaveBeenCalledWith({
         select: ['id', 'password'],
@@ -162,16 +172,16 @@ describe('UserService', () => {
     });
 
     it('should fail if incorrect password', async () => {
-      // Mock the database call
+      // Arrange
       userRepo.findOne.mockResolvedValue({
         id: 1,
         checkPassword: jest.fn(() => Promise.resolve(false)),
       });
 
-      // Call the service
+      // Act
       const result = await service.login(loginArgs);
 
-      // Check if the result is correct
+      // Assert
       expect(result).toEqual({
         ok: false,
         error: 'Incorrect password.',
@@ -179,16 +189,16 @@ describe('UserService', () => {
     });
 
     it('should return a token', async () => {
-      // Mock the database call
+      // Arrange
       userRepo.findOne.mockResolvedValue({
         id: 1,
         checkPassword: jest.fn(() => Promise.resolve(true)),
       });
 
-      // Call the service
+      // Act
       const result = await service.login(loginArgs);
 
-      // Check if the result is correct
+      // Assert
       expect(jwtService.sign).toHaveBeenCalledTimes(1);
       expect(jwtService.sign).toHaveBeenCalledWith(expect.any(Number));
       expect(result.ok).toBe(true);
@@ -196,13 +206,13 @@ describe('UserService', () => {
     });
 
     it('should fail on exception', async () => {
-      // Mock the database call
+      // Arrange
       userRepo.findOne.mockRejectedValue(new Error('test'));
 
-      // Call the service
+      // Act
       const result = await service.login(loginArgs);
 
-      // Check if the result is correct
+      // Assert
       expect(result).toEqual({
         ok: false,
         error: 'Could not log user in.',
@@ -212,15 +222,15 @@ describe('UserService', () => {
 
   describe('findById', () => {
     it('should find a existing user', async () => {
-      // Mock the database call
+      // Arrange
       userRepo.findOneOrFail.mockResolvedValue({
         id: 1,
       });
 
-      // Call the service
+      // Act
       const result = await service.findById(1);
 
-      // Check if the result is correct
+      // Assert
       expect(result).toEqual({
         ok: true,
         user: { id: 1 },
@@ -228,13 +238,13 @@ describe('UserService', () => {
     });
 
     it('should fail if no user is found', async () => {
-      // Mock the database call
+      // Arrange
       userRepo.findOneOrFail.mockRejectedValue(new Error('test'));
 
-      // Call the service
+      // Act
       const result = await service.findById(1);
 
-      // Check if the result is correct
+      // Assert
       expect(result).toEqual({
         ok: false,
         error: 'Could not find user.',
@@ -244,6 +254,7 @@ describe('UserService', () => {
 
   describe('editProfile', () => {
     it('should change email', async () => {
+      // Arrange
       const oldUser = {
         email: 'test@test.com',
         verified: true,
@@ -257,16 +268,14 @@ describe('UserService', () => {
         verified: false,
       };
       const newVerification = { code: 'code' };
-
-      // Mock the database calls
       userRepo.findOne.mockResolvedValue(oldUser);
       verificationRepo.create.mockReturnValue(newVerification);
       verificationRepo.save.mockResolvedValue(newVerification);
 
-      // Call the service
+      // Act
       await service.editProfile(editProfileArgs.userId, editProfileArgs.input);
 
-      // Check if the database calls are correct
+      // Assert
       expect(userRepo.findOne).toHaveBeenCalledTimes(1);
       expect(userRepo.findOne).toHaveBeenCalledWith({
         where: { id: editProfileArgs.userId },
@@ -283,21 +292,20 @@ describe('UserService', () => {
     });
 
     it('should change password', async () => {
+      // Arrange
       const editProfileArgs = {
         userId: 1,
         input: { password: 'newPassword' },
       };
-
-      // Mock the database calls
       userRepo.findOne.mockResolvedValue({ password: 'oldPassword' });
 
-      // Call the service
+      // Act
       const result = await service.editProfile(
         editProfileArgs.userId,
         editProfileArgs.input,
       );
 
-      // Check if the result is correct
+      // Assert
       expect(userRepo.save).toHaveBeenCalledTimes(1);
       expect(userRepo.save).toHaveBeenCalledWith({
         password: editProfileArgs.input.password,
@@ -306,30 +314,30 @@ describe('UserService', () => {
     });
 
     it('should fail on exception', async () => {
-      // Mock the database call
+      // Arrange
       userRepo.findOne.mockRejectedValue(new Error('test'));
 
-      // Call the service
+      // Act
       const result = await service.editProfile(1, { email: 'try@new.com' });
 
-      // Check if the result is correct
+      // Assert
       expect(result).toEqual({ ok: false, error: 'Could not update profile.' });
     });
   });
 
   describe('verifyEmail', () => {
     it('should verify email', async () => {
+      // Arrange
       const mockedVerification = {
         id: 1,
         user: { verified: false },
       };
-      // Mock the database calls
       verificationRepo.findOne.mockResolvedValue(mockedVerification);
 
-      // Call the service
+      // Act
       const result = await service.verifyEmail('');
 
-      // Check if the result is correct
+      // Assert
       expect(verificationRepo.findOne).toHaveBeenCalledTimes(1);
       expect(verificationRepo.findOne).toHaveBeenCalledWith({
         where: { code: '' },
@@ -345,24 +353,24 @@ describe('UserService', () => {
     });
 
     it('should fail if verification not found', async () => {
-      // Mock the database call
+      // Arrange
       verificationRepo.findOne.mockResolvedValue(null);
 
-      // Call the service
+      // Act
       const result = await service.verifyEmail('');
 
-      // Check if the result is correct
+      // Assert
       expect(result).toEqual({ ok: false, error: 'Could not verify email.' });
     });
 
     it('should fail on exception', async () => {
-      // Mock the database call
+      // Arrange
       verificationRepo.findOne.mockRejectedValue(new Error('test'));
 
-      // Call the service
+      // Act
       const result = await service.verifyEmail('');
 
-      // Check if the result is correct
+      // Assert
       expect(result).toEqual({ ok: false, error: 'Could not verify email.' });
     });
   });
