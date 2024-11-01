@@ -10,12 +10,12 @@ export class MailService {
     @Inject(MAIL_OPTIONS) private readonly options: MailModuleOptions,
   ) {}
 
-  private async sendEmail(
+  async sendEmail(
     template: string,
     to: string,
     subject: string,
     emailVars: EmailVar[],
-  ) {
+  ): Promise<Boolean> {
     const form = new FormData();
     form.append('from', `Excited User <mailgun@${this.options.domain}>`);
     // form.append('to', to);
@@ -36,8 +36,9 @@ export class MailService {
           body: form,
         },
       );
+      return true;
     } catch (error) {
-      console.log(error);
+      return false;
     }
   }
 
