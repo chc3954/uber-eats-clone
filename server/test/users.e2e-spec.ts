@@ -2,8 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import exp from 'constants';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
 
 jest.mock('got', () => {
   return {
@@ -19,6 +21,7 @@ const testUser = {
 
 describe('UserModule (e2e)', () => {
   let app: INestApplication;
+  let userRepo: Repository<User>;
   let dataSource: DataSource;
   let token: string;
 
@@ -29,6 +32,7 @@ describe('UserModule (e2e)', () => {
 
     dataSource = module.get<DataSource>(DataSource);
     app = module.createNestApplication();
+    userRepo = module.get(getRepositoryToken(User));
     await app.init();
   });
 
@@ -141,7 +145,63 @@ describe('UserModule (e2e)', () => {
     });
   });
 
-  it.todo('userProfile');
+  describe('userProfile', () => {
+    let userId: number;
+
+    beforeAll(async () => {
+      const [user] = await userRepo.find();
+      userId = user.id;
+    });
+    it('should see a user profile', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set('X-JWT', token)
+        .send({
+          query: `
+          {
+            userProfile(userId: ${userId}) {
+              ok
+              error
+              user {
+                id
+              }
+            }
+          }
+        `,
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.data.userProfile.ok).toBe(true);
+          expect(res.body.data.userProfile.error).toBe(null);
+          expect(res.body.data.userProfile.user.id).toBe(1);
+        });
+    });
+
+    it('should not find a user profile', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set('X-JWT', token)
+        .send({
+          query: `
+          {
+            userProfile(userId: 404) {
+              ok
+              error
+              user {
+                id
+              }
+            }
+          }
+        `,
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.data.userProfile.ok).toBe(false);
+          expect(res.body.data.userProfile.error).toEqual(expect.any(String));
+          expect(res.body.data.userProfile.user).toBe(null);
+        });
+    });
+  });
   it.todo('me');
   it.todo('verifyEmail');
   it.todo('editProfile');
