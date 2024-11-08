@@ -5,7 +5,7 @@ import { UserService } from './users.service';
 import { UsersResolver } from './users.resolver';
 import { ConfigModule } from '@nestjs/config';
 import { JwtService } from 'src/jwt/jwt.service';
-import { Verification } from './entities/verification';
+import { Verification } from './entities/verification.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Verification])],
