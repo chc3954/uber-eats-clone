@@ -8,7 +8,13 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { Entity, Column, BeforeInsert, BeforeUpdate } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common';
-import { IsEmail, IsEnum, IsOptional, IsBoolean } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsBoolean,
+  IsString,
+} from 'class-validator';
 
 enum UserRole {
   Client,
@@ -22,13 +28,14 @@ registerEnumType(UserRole, { name: 'UserRole' });
 @ObjectType()
 @Entity()
 export class User extends CoreEntity {
-  @Column()
+  @Column({ unique: true })
   @Field((type) => String)
   @IsEmail()
   email: string;
 
   @Column({ select: false })
   @Field((type) => String)
+  @IsString()
   password: string;
 
   @Column({ type: 'enum', enum: UserRole })
@@ -36,7 +43,7 @@ export class User extends CoreEntity {
   @IsEnum(UserRole)
   role: UserRole;
 
-  @Column({ nullable: true })
+  @Column({ default: false })
   @Field((type) => String, { nullable: true })
   @IsOptional()
   @IsBoolean()
@@ -46,7 +53,7 @@ export class User extends CoreEntity {
   @BeforeUpdate()
   async hashPassword(): Promise<void> {
     try {
-      this.password = await bcrypt.hash(this.password, 10);
+      this.password = await bcrypt.hash(this.password + '', 10);
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException();
@@ -54,13 +61,11 @@ export class User extends CoreEntity {
   }
 
   async checkPassword(aPassword: string): Promise<boolean> {
-    if (this.password) {
-      try {
-        return await bcrypt.compare(aPassword, this.password);
-      } catch (error) {
-        console.log(error);
-        throw new InternalServerErrorException();
-      }
+    try {
+      return await bcrypt.compare(aPassword, this.password);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
     }
   }
 }

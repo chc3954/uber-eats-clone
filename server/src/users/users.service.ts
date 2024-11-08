@@ -40,7 +40,7 @@ export class UserService {
       const verification = await this.verifications.save(
         this.verifications.create({ user }),
       );
-      this.mailService.sendVerificationEmail(email, verification.code);
+      this.mailService.sendVerificationEmail(user.email, verification.code);
       return { ok: true };
     } catch {
       return { ok: false, error: 'Could not create account.' };
@@ -86,6 +86,7 @@ export class UserService {
       if (email) {
         user.email = email;
         user.verified = false;
+        await this.verifications.delete({ user: { id: user.id } });
         const verification = await this.verifications.save(
           this.verifications.create({ user }),
         );
@@ -94,9 +95,11 @@ export class UserService {
       if (password) {
         user.password = password;
       }
+
       await this.users.save(user);
       return { ok: true };
-    } catch {
+    } catch (error) {
+      console.log(error);
       return { ok: false, error: 'Could not update profile.' };
     }
   }

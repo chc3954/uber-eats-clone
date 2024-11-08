@@ -16,14 +16,6 @@ import { VerifyEmailInput, VerifyEmailOutput } from './dtos/verify-email.dto';
 export class UsersResolver {
   constructor(private readonly usersService: UserService) {}
 
-  @Query((returns) => Boolean)
-  hi() {
-    return true;
-  }
-
-  @Mutation((returns) => CreateAccountOutput)
-  async createUser(@Args('input') createAccountInput: CreateAccountInput) {}
-
   @Mutation((returns) => CreateAccountOutput)
   async createAccount(
     @Args('input') createAccountInput: CreateAccountInput,
