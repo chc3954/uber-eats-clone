@@ -19,7 +19,10 @@ export class Category extends CoreEntity {
   iconImg: string;
 
   @Field((type) => [Restaurant])
-  @OneToMany((type) => Restaurant, (restaurant) => restaurant.category)
+  @OneToMany((type) => Restaurant, (restaurant) => restaurant.category, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   restaurants: Restaurant[];
 
   @Field((type) => String)
