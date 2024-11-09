@@ -86,7 +86,7 @@ export class UserService {
       if (email) {
         user.email = email;
         user.verified = false;
-        await this.verifications.delete({ user: { id: user.id } });
+        await this.verifications.delete({ user: { id: user.id } }); // Delete the old verification.
         const verification = await this.verifications.save(
           this.verifications.create({ user }),
         );
@@ -95,7 +95,6 @@ export class UserService {
       if (password) {
         user.password = password;
       }
-
       await this.users.save(user);
       return { ok: true };
     } catch (error) {

@@ -43,6 +43,7 @@ export class MailService {
   }
 
   sendVerificationEmail(email: string, code: string) {
+    // template, to, subject, emailVars
     this.sendEmail('verify-email', email, 'Verify Your Email', [
       { key: 'code', value: code },
       { key: 'username', value: email },

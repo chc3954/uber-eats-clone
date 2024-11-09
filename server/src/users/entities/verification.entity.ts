@@ -16,6 +16,7 @@ export class Verification extends CoreEntity {
   @JoinColumn()
   user: User;
 
+  // Create a verification code before inserting a new verification.
   @BeforeInsert()
   createCode(): void {
     this.code = uuidv4();

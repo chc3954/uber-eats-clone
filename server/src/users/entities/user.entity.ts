@@ -17,12 +17,14 @@ import {
 } from 'class-validator';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 
+// Define the user roles.
 export enum UserRole {
   Client = 'Client',
   Owner = 'Owner',
   Delivery = 'Delivery',
 }
 
+// Register the user roles as an enum type.
 registerEnumType(UserRole, { name: 'UserRole' });
 
 @InputType('UserInputType', { isAbstract: true })
@@ -34,7 +36,7 @@ export class User extends CoreEntity {
   @IsEmail()
   email: string;
 
-  @Column({ select: false })
+  @Column({ select: false }) // Do not select the password by default.
   @Field((type) => String)
   @IsString()
   password: string;
@@ -54,6 +56,7 @@ export class User extends CoreEntity {
   @OneToMany((type) => Restaurant, (restaurant) => restaurant.owner)
   restaurants: Restaurant[];
 
+  // Hash the password before inserting or updating the user.
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword(): Promise<void> {
@@ -65,6 +68,7 @@ export class User extends CoreEntity {
     }
   }
 
+  // Check the password.
   async checkPassword(aPassword: string): Promise<boolean> {
     try {
       return await bcrypt.compare(aPassword, this.password);

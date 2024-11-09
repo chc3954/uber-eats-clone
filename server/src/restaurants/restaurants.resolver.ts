@@ -4,9 +4,13 @@ import { CreateRestaurantInput } from './dtos/create-restaurant.dto';
 import { RestaurantService } from './restaurants.service';
 import { CreateAccountOutput } from 'src/users/dtos/create-account.dto';
 import { AuthUser } from 'src/auth/auth.decorator';
-import { User, UserRole } from 'src/users/entities/user.entity';
-import { SetMetadata } from '@nestjs/common';
+import { User } from 'src/users/entities/user.entity';
 import { Role } from 'src/auth/role.decorator';
+import { EditProfileOutput } from 'src/users/dtos/edit-profile.dto';
+import {
+  EditRestaurantInput,
+  EditRestaurantOutput,
+} from './dtos/edit-restaurant.dto';
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {
@@ -15,12 +19,21 @@ export class RestaurantResolver {
   @Mutation((returns) => CreateAccountOutput)
   @Role(['Owner'])
   async createRestaurant(
-    @AuthUser() authUser: User,
+    @AuthUser() owner: User,
     @Args('input') createRestaurnatInput: CreateRestaurantInput,
   ): Promise<CreateAccountOutput> {
     return this.restaurantService.createRestaurant(
-      authUser,
+      owner,
       createRestaurnatInput,
     );
+  }
+
+  @Mutation((returns) => EditProfileOutput)
+  @Role(['Owner'])
+  async editRestaurant(
+    @AuthUser() owner: User,
+    @Args('input') editRestaurantInput: EditRestaurantInput,
+  ): Promise<EditRestaurantOutput> {
+    return this.restaurantService.editRestaurant(owner, editRestaurantInput);
   }
 }

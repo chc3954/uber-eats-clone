@@ -21,7 +21,7 @@ export class Category extends CoreEntity {
   @Field((type) => [Restaurant])
   @OneToMany((type) => Restaurant, (restaurant) => restaurant.category, {
     nullable: true,
-    onDelete: 'SET NULL',
+    onDelete: 'SET NULL', // If the category is deleted, set the category of the restaurant to null.
   })
   restaurants: Restaurant[];
 
