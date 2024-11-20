@@ -11,6 +11,10 @@ import {
   EditRestaurantOutput,
 } from './dtos/edit-restaurant.dto';
 import { CategoryRepository } from './repositories/category.repository';
+import {
+  DeleteRestaurantInput,
+  DeleteRestaurantOutput,
+} from './dtos/delete-restaurant.dto';
 
 @Injectable()
 export class RestaurantService {
@@ -84,6 +88,37 @@ export class RestaurantService {
       console.log(error);
 
       return { ok: false, error: 'Could not edit restaurant' };
+    }
+  }
+
+  async deleteRestaurant(
+    owner: User,
+    { restaurantId }: DeleteRestaurantInput,
+  ): Promise<DeleteRestaurantOutput> {
+    try {
+      const restaurant = await this.restaurants.findOneOrFail({
+        where: { id: restaurantId },
+        loadRelationIds: true,
+      });
+
+      // If the restaurant does not exist, return an error.
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Restaurant not found',
+        };
+      }
+      // If the user is not the owner of the restaurant, return an error.
+      if (owner.id !== restaurant.ownerId) {
+        return {
+          ok: false,
+          error: "You can't delete a restaurant you don't own",
+        };
+      }
+      await this.restaurants.delete(restaurantId);
+      return { ok: true };
+    } catch {
+      return { ok: false, error: 'Could not delete restaurant' };
     }
   }
 }
