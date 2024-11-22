@@ -23,6 +23,8 @@ import {
   SearchRestaurantInput,
   SearchRestaurantOutput,
 } from './dtos/search-restaurant.dto';
+import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dto';
+import { Dish } from './entities/dish.entity';
 
 const PAGE_SIZE = 25;
 
@@ -32,6 +34,8 @@ export class RestaurantService {
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
     private readonly categories: CategoryRepository,
+    @InjectRepository(Dish)
+    private readonly dishes: Repository<Dish>,
   ) {}
 
   async createRestaurant(
@@ -216,6 +220,7 @@ export class RestaurantService {
     try {
       const restaurant = await this.restaurants.findOneOrFail({
         where: { id: restaurantId },
+        relations: ['menu'],
       });
       return {
         ok: true,
@@ -229,7 +234,7 @@ export class RestaurantService {
     }
   }
 
-  async searchRestaurantByName({
+  async searchRestaurantsByName({
     query,
     page,
   }: SearchRestaurantInput): Promise<SearchRestaurantOutput> {
@@ -250,6 +255,32 @@ export class RestaurantService {
         ok: false,
         error: 'Could not search for restaurant',
       };
+    }
+  }
+
+  async createDish(
+    owner: User,
+    createDishInput: CreateDishInput,
+  ): Promise<CreateDishOutput> {
+    try {
+      const restaurant = await this.restaurants.findOne({
+        where: { id: createDishInput.restaurantId },
+      });
+      if (!restaurant) {
+        return { ok: false, error: 'Restaurant not found' };
+      }
+      if (owner.id !== restaurant.ownerId) {
+        return {
+          ok: false,
+          error: "You can't create a dish for a restaurant you don't own",
+        };
+      }
+      await this.dishes.save(
+        this.dishes.create({ ...createDishInput, restaurant }),
+      );
+      return { ok: true };
+    } catch {
+      return { ok: false, error: 'Could not create dish' };
     }
   }
 }

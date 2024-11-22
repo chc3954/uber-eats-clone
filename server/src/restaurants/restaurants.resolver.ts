@@ -32,6 +32,8 @@ import {
   SearchRestaurantInput,
   SearchRestaurantOutput,
 } from './dtos/search-restaurant.dto';
+import { Dish } from './entities/dish.entity';
+import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dto';
 
 // Resolver for the Restaurant entity.
 @Resolver((of) => Restaurant)
@@ -89,7 +91,9 @@ export class RestaurantResolver {
   searchRestaurant(
     @Args('input') searchRestaurantInput: SearchRestaurantInput,
   ): Promise<SearchRestaurantOutput> {
-    return this.restaurantService.searchRestaurantByName(searchRestaurantInput);
+    return this.restaurantService.searchRestaurantsByName(
+      searchRestaurantInput,
+    );
   }
 }
 
@@ -115,5 +119,19 @@ export class CategoryResolver {
     @Args('input') categoryInput: CategoryInput,
   ): Promise<CategoryOutput> {
     return this.restaurantService.findCategoryBySlug(categoryInput);
+  }
+}
+
+@Resolver((of) => Dish)
+export class DishResolver {
+  constructor(private readonly restaurantService: RestaurantService) {}
+
+  @Mutation((returns) => CreateDishOutput)
+  @Role(['Owner'])
+  createDish(
+    @AuthUser() owner,
+    @Args('input') createDishInput: CreateDishInput,
+  ): Promise<CreateDishOutput> {
+    return this.restaurantService.createDish(owner, createDishInput);
   }
 }
