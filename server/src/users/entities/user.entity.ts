@@ -16,6 +16,7 @@ import {
   IsString,
 } from 'class-validator';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
+import { Order } from 'src/orders/entities/order.entity';
 
 // Define the user roles.
 export enum UserRole {
@@ -55,6 +56,14 @@ export class User extends CoreEntity {
   @Field((type) => [Restaurant])
   @OneToMany((type) => Restaurant, (restaurant) => restaurant.owner)
   restaurants: Restaurant[];
+
+  @Field((type) => [Order])
+  @OneToMany((type) => Order, (order) => order.customer)
+  orders: Order[];
+
+  @Field((type) => [Order])
+  @OneToMany((type) => Order, (order) => order.driver)
+  rides: Order[];
 
   // Hash the password before inserting or updating the user.
   @BeforeInsert()
