@@ -9,6 +9,7 @@ import { OrderItem } from './entities/order-item.entity';
 import { Dish } from 'src/restaurants/entities/dish.entity';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
+import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -126,7 +127,7 @@ export class OrdersService {
     }
   }
 
-  canSeeOrder = (user: User, order: Order): boolean => {
+  canSeeOrder(user: User, order: Order): boolean {
     let canSee: boolean = true;
     switch (user.role) {
       case UserRole.Client:
@@ -140,14 +141,17 @@ export class OrdersService {
         break;
     }
     return canSee;
-  };
+  }
 
   async getOrder(
     user: User,
     { id: orderId }: GetOrderInput,
   ): Promise<GetOrderOutput> {
     try {
-      const order = await this.orders.findOne({ where: { id: orderId } });
+      const order = await this.orders.findOne({
+        where: { id: orderId },
+        relations: ['restaurant'],
+      });
       if (!order) {
         return {
           ok: false,
@@ -168,6 +172,42 @@ export class OrdersService {
       return {
         ok: false,
         error: 'Could not get order.',
+      };
+    }
+  }
+
+  async editOrder(
+    user: User,
+    { id: orderId, status }: EditOrderInput,
+  ): Promise<EditOrderOutput> {
+    try {
+      const order = await this.orders.findOne({
+        where: { id: orderId },
+        relations: ['restaurant'],
+      });
+      if (!order) {
+        return {
+          ok: false,
+          error: 'Order not found.',
+        };
+      }
+      if (!this.canSeeOrder(user, order)) {
+        return {
+          ok: false,
+          error: 'You cannot do that.',
+        };
+      }
+      if (status) {
+        order.status = status;
+        await this.orders.save(order);
+      }
+      return {
+        ok: true,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not edit order.',
       };
     }
   }
