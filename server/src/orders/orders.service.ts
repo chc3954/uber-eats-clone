@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Order } from './entities/order.entity';
+import { Order, OrderStatus } from './entities/order.entity';
 import { Repository } from 'typeorm';
 import { User, UserRole } from 'src/users/entities/user.entity';
 import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
@@ -10,6 +10,7 @@ import { Dish } from 'src/restaurants/entities/dish.entity';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
 import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto';
+import { CancelOrderInput, CancelOrderOutput } from './dtos/cancel-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -208,6 +209,45 @@ export class OrdersService {
       return {
         ok: false,
         error: 'Could not edit order.',
+      };
+    }
+  }
+
+  async cancelOrder(
+    user: User,
+    { id: orderId }: CancelOrderInput,
+  ): Promise<CancelOrderOutput> {
+    try {
+      const order = await this.orders.findOne({
+        where: { id: orderId },
+      });
+      if (!order) {
+        return {
+          ok: false,
+          error: 'Order not found.',
+        };
+      }
+      if (order.customerId !== user.id) {
+        return {
+          ok: false,
+          error: 'You are not allowed to do this.',
+        };
+      }
+      if (order.status !== 'Pending') {
+        return {
+          ok: false,
+          error: 'You cannot cancel this order.',
+        };
+      }
+      await this.orders.save({
+        ...order,
+        status: OrderStatus.Cancelled,
+      });
+      return { ok: true };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not cancel order.',
       };
     }
   }
