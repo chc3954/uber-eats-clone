@@ -38,11 +38,11 @@ import { EditDishInput, EditDishOutput } from './dtos/edit-dish.dto';
 import { DeleteDishInput, DeleteDishOutput } from './dtos/delete-dish.dto';
 
 // Resolver for the Restaurant entity.
-@Resolver((of) => Restaurant)
+@Resolver(() => Restaurant)
 export class RestaurantResolver {
   constructor(private readonly restaurantService: RestaurantService) {}
 
-  @Mutation((returns) => CreateAccountOutput)
+  @Mutation(() => CreateAccountOutput)
   @Role(['Owner'])
   async createRestaurant(
     @AuthUser() owner: User,
@@ -54,7 +54,7 @@ export class RestaurantResolver {
     );
   }
 
-  @Mutation((returns) => EditProfileOutput)
+  @Mutation(() => EditProfileOutput)
   @Role(['Owner'])
   async editRestaurant(
     @AuthUser() owner: User,
@@ -63,7 +63,7 @@ export class RestaurantResolver {
     return this.restaurantService.editRestaurant(owner, editRestaurantInput);
   }
 
-  @Mutation((returns) => EditProfileOutput)
+  @Mutation(() => EditProfileOutput)
   @Role(['Owner'])
   deleteRestaurant(
     @AuthUser() owner: User,
@@ -75,21 +75,21 @@ export class RestaurantResolver {
     );
   }
 
-  @Query((returns) => RestaurantsOutput)
+  @Query(() => RestaurantsOutput)
   restaurants(
     @Args('input') restaurantInput: RestaurantsInput,
   ): Promise<RestaurantsOutput> {
     return this.restaurantService.allRestaurants(restaurantInput);
   }
 
-  @Query((returns) => RestaurantOutput)
+  @Query(() => RestaurantOutput)
   restaurant(
     @Args('input') restaurantInput: RestaurantInput,
   ): Promise<RestaurantsOutput> {
     return this.restaurantService.findRestaurantById(restaurantInput);
   }
 
-  @Query((returns) => SearchRestaurantOutput)
+  @Query(() => SearchRestaurantOutput)
   searchRestaurant(
     @Args('input') searchRestaurantInput: SearchRestaurantInput,
   ): Promise<SearchRestaurantOutput> {
@@ -100,7 +100,7 @@ export class RestaurantResolver {
 }
 
 // Resolver for the Category entity.
-@Resolver((of) => Category)
+@Resolver(() => Category)
 export class CategoryResolver {
   constructor(private readonly restaurantService: RestaurantService) {}
 
@@ -111,12 +111,12 @@ export class CategoryResolver {
     return this.restaurantService.countRestaurants(category);
   }
 
-  @Query((returns) => AllCategoriesOutput)
+  @Query(() => AllCategoriesOutput)
   allCategories(): Promise<AllCategoriesOutput> {
     return this.restaurantService.allCategories();
   }
 
-  @Query((returns) => CategoryOutput)
+  @Query(() => CategoryOutput)
   category(
     @Args('input') categoryInput: CategoryInput,
   ): Promise<CategoryOutput> {
@@ -124,11 +124,11 @@ export class CategoryResolver {
   }
 }
 
-@Resolver((of) => Dish)
+@Resolver(() => Dish)
 export class DishResolver {
   constructor(private readonly restaurantService: RestaurantService) {}
 
-  @Mutation((returns) => CreateDishOutput)
+  @Mutation(() => CreateDishOutput)
   @Role(['Owner'])
   createDish(
     @AuthUser() owner,
@@ -137,7 +137,7 @@ export class DishResolver {
     return this.restaurantService.createDish(owner, createDishInput);
   }
 
-  @Mutation((returns) => EditDishOutput)
+  @Mutation(() => EditDishOutput)
   @Role(['Owner'])
   editDish(
     @AuthUser() owner,
@@ -146,7 +146,7 @@ export class DishResolver {
     return this.restaurantService.editDish(owner, editDishInput);
   }
 
-  @Mutation((returns) => DeleteDishOutput)
+  @Mutation(() => DeleteDishOutput)
   @Role(['Owner'])
   deleteDish(
     @AuthUser() owner,

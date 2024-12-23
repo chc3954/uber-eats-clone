@@ -13,29 +13,29 @@ import { UserProfileInput, UserProfileOutput } from './dtos/user-profile.dto';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { VerifyEmailInput, VerifyEmailOutput } from './dtos/verify-email.dto';
 import { Role } from 'src/auth/role.decorator';
-@Resolver((of) => User)
+@Resolver(() => User)
 export class UsersResolver {
   constructor(private readonly usersService: UserService) {}
 
-  @Mutation((returns) => CreateAccountOutput)
+  @Mutation(() => CreateAccountOutput)
   async createAccount(
     @Args('input') createAccountInput: CreateAccountInput,
   ): Promise<CreateAccountOutput> {
     return await this.usersService.createAccount(createAccountInput);
   }
 
-  @Mutation((returns) => LoginOutput)
+  @Mutation(() => LoginOutput)
   async login(@Args('input') loginInput: LoginInput): Promise<LoginOutput> {
     return await this.usersService.login(loginInput);
   }
 
-  @Query((returns) => User)
+  @Query(() => User)
   @Role(['Any'])
   async me(@AuthUser() authUser: User) {
     return authUser;
   }
 
-  @Query((returns) => UserProfileOutput)
+  @Query(() => UserProfileOutput)
   @Role(['Any'])
   async userProfile(
     @Args() userProfileInput: UserProfileInput,
@@ -43,7 +43,7 @@ export class UsersResolver {
     return await this.usersService.findById(userProfileInput.userId);
   }
 
-  @Mutation((returns) => EditProfileOutput)
+  @Mutation(() => EditProfileOutput)
   @Role(['Any'])
   async editProfile(
     @AuthUser() authUser: User,
@@ -52,7 +52,7 @@ export class UsersResolver {
     return await this.usersService.editProfile(authUser.id, editProfileInput);
   }
 
-  @Mutation((returns) => VerifyEmailOutput)
+  @Mutation(() => VerifyEmailOutput)
   async verifyEmail(
     @Args('input') { code }: VerifyEmailInput,
   ): Promise<VerifyEmailOutput> {
