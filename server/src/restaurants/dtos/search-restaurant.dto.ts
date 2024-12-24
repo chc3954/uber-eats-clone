@@ -4,12 +4,12 @@ import { PaginationInput, PaginationOutput } from './pagination.dto';
 
 @InputType()
 export class SearchRestaurantInput extends PaginationInput {
-  @Field((type) => String)
+  @Field(() => String)
   query: string;
 }
 
 @ObjectType()
 export class SearchRestaurantOutput extends PaginationOutput {
-  @Field((type) => [Restaurant], { nullable: true })
+  @Field(() => [Restaurant], { nullable: true })
   restaurants?: Restaurant[];
 }

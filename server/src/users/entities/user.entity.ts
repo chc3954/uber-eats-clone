@@ -17,6 +17,7 @@ import {
 } from 'class-validator';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { Order } from 'src/orders/entities/order.entity';
+import { Payment } from 'src/payments/entities/payment.entity';
 
 // Define the user roles.
 export enum UserRole {
@@ -33,36 +34,40 @@ registerEnumType(UserRole, { name: 'UserRole' });
 @Entity()
 export class User extends CoreEntity {
   @Column({ unique: true })
-  @Field((type) => String)
+  @Field(() => String)
   @IsEmail()
   email: string;
 
   @Column({ select: false }) // Do not select the password by default.
-  @Field((type) => String)
+  @Field(() => String)
   @IsString()
   password: string;
 
   @Column({ type: 'enum', enum: UserRole })
-  @Field((type) => UserRole)
+  @Field(() => UserRole)
   @IsEnum(UserRole)
   role: UserRole;
 
   @Column({ default: false })
-  @Field((type) => String, { nullable: true })
+  @Field(() => String, { nullable: true })
   @IsOptional()
   @IsBoolean()
   verified: boolean;
 
-  @Field((type) => [Restaurant])
-  @OneToMany((type) => Restaurant, (restaurant) => restaurant.owner)
+  @Field(() => [Restaurant])
+  @OneToMany(() => Restaurant, (restaurant) => restaurant.owner)
   restaurants: Restaurant[];
 
-  @Field((type) => [Order])
-  @OneToMany((type) => Order, (order) => order.customer)
+  @Field(() => [Order])
+  @OneToMany(() => Order, (order) => order.customer)
   orders: Order[];
 
-  @Field((type) => [Order])
-  @OneToMany((type) => Order, (order) => order.driver)
+  @Field(() => [Payment])
+  @OneToMany(() => Payment, (payment) => payment.user)
+  payments: Payment[];
+
+  @Field(() => [Order])
+  @OneToMany(() => Order, (order) => order.driver)
   rides: Order[];
 
   // Hash the password before inserting or updating the user.

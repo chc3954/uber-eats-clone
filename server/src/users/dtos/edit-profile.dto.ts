@@ -5,10 +5,10 @@ import { CreateAccountInput } from './create-account.dto';
 
 @InputType()
 export class EditProfileInput extends PartialType(CreateAccountInput) {
-  @Field((type) => String, { nullable: true })
+  @Field(() => String, { nullable: true })
   email?: string;
 
-  @Field((type) => String, { nullable: true })
+  @Field(() => String, { nullable: true })
   password?: string;
 }
 

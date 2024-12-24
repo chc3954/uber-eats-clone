@@ -15,7 +15,7 @@ export class EditDishInput extends PickType(PartialType(Dish), [
   'description',
   'options',
 ]) {
-  @Field((type) => Number)
+  @Field(() => Number)
   dishId: number;
 }
 

@@ -33,8 +33,8 @@ registerEnumType(OrderStatus, { name: 'OrderStatus' });
 @ObjectType()
 @Entity()
 export class Order extends CoreEntity {
-  @Field((type) => User, { nullable: true })
-  @ManyToOne((type) => User, (user) => user.orders, {
+  @Field(() => User, { nullable: true })
+  @ManyToOne(() => User, (user) => user.orders, {
     onDelete: 'SET NULL',
     nullable: true,
     eager: true,
@@ -44,8 +44,8 @@ export class Order extends CoreEntity {
   @RelationId((order: Order) => order.customer)
   customerId: number;
 
-  @Field((type) => User, { nullable: true })
-  @ManyToOne((type) => User, (user) => user.rides, {
+  @Field(() => User, { nullable: true })
+  @ManyToOne(() => User, (user) => user.rides, {
     onDelete: 'SET NULL',
     nullable: true,
     eager: true,
@@ -55,26 +55,26 @@ export class Order extends CoreEntity {
   @RelationId((order: Order) => order.driver)
   driverId: number;
 
-  @Field((type) => Restaurant, { nullable: true })
-  @ManyToOne((type) => Restaurant, (restaurant) => restaurant.orders, {
+  @Field(() => Restaurant, { nullable: true })
+  @ManyToOne(() => Restaurant, (restaurant) => restaurant.orders, {
     onDelete: 'SET NULL',
     nullable: true,
     eager: true,
   })
   restaurant?: Restaurant;
 
-  @Field((type) => [OrderItem])
-  @ManyToMany((type) => OrderItem, { eager: true })
+  @Field(() => [OrderItem])
+  @ManyToMany(() => OrderItem, { eager: true })
   @JoinTable()
   items: OrderItem[];
 
   @Column({ nullable: true })
-  @Field((type) => Number, { nullable: true })
+  @Field(() => Number, { nullable: true })
   @IsNumber()
   total?: number;
 
   @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.Pending })
-  @Field((type) => OrderStatus)
+  @Field(() => OrderStatus)
   @IsEnum(OrderStatus)
   status: OrderStatus;
 }

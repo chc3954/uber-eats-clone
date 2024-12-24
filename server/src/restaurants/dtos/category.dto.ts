@@ -4,12 +4,12 @@ import { PaginationInput, PaginationOutput } from './pagination.dto';
 
 @InputType()
 export class CategoryInput extends PaginationInput {
-  @Field((type) => String)
+  @Field(() => String)
   slug: string;
 }
 
 @ObjectType()
 export class CategoryOutput extends PaginationOutput {
-  @Field((type) => Category, { nullable: true })
+  @Field(() => Category, { nullable: true })
   category?: Category;
 }

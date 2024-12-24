@@ -9,10 +9,10 @@ import { v4 as uuidv4 } from 'uuid';
 @Entity()
 export class Verification extends CoreEntity {
   @Column()
-  @Field((type) => String)
+  @Field(() => String)
   code: string;
 
-  @OneToOne((type) => User, { onDelete: 'CASCADE' })
+  @OneToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
 

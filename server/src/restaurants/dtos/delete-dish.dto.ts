@@ -3,7 +3,7 @@ import { CoreOutput } from 'src/common/dtos/output.dto';
 
 @InputType()
 export class DeleteDishInput {
-  @Field((type) => Number)
+  @Field(() => Number)
   dishId: number;
 }
 

@@ -12,29 +12,29 @@ import { Order } from 'src/orders/entities/order.entity';
 @Entity()
 export class Restaurant extends CoreEntity {
   @Column()
-  @Field((type) => String)
+  @Field(() => String)
   @IsString()
   name: string;
 
   @Column()
-  @Field((type) => String)
+  @Field(() => String)
   @IsString()
   coverImg: string;
 
   @Column()
-  @Field((type) => String)
+  @Field(() => String)
   @IsString()
   address: string;
 
-  @Field((type) => Category, { nullable: true })
-  @ManyToOne((type) => Category, (category) => category.restaurants, {
+  @Field(() => Category, { nullable: true })
+  @ManyToOne(() => Category, (category) => category.restaurants, {
     nullable: true,
     onDelete: 'SET NULL', // If the category is deleted, set the category of the restaurant to null.
   })
   category: Category;
 
-  @Field((type) => User)
-  @ManyToOne((type) => User, (user) => user.restaurants, {
+  @Field(() => User)
+  @ManyToOne(() => User, (user) => user.restaurants, {
     onDelete: 'CASCADE', // If the user is deleted, delete the restaurant.
   })
   owner: User;
@@ -43,11 +43,11 @@ export class Restaurant extends CoreEntity {
   @RelationId((restaurant: Restaurant) => restaurant.owner)
   ownerId: number;
 
-  @Field((type) => [Dish], { nullable: true })
-  @OneToMany((type) => Dish, (dish) => dish.restaurant)
+  @Field(() => [Dish], { nullable: true })
+  @OneToMany(() => Dish, (dish) => dish.restaurant)
   menu?: Dish[];
 
-  @Field((type) => [Order])
-  @OneToMany((type) => Order, (order) => order.restaurant)
+  @Field(() => [Order])
+  @OneToMany(() => Order, (order) => order.restaurant)
   orders: Order[];
 }

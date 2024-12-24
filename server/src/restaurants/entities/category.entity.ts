@@ -9,24 +9,24 @@ import { Restaurant } from './restaurant.entity';
 @Entity()
 export class Category extends CoreEntity {
   @Column({ unique: true })
-  @Field((type) => String)
+  @Field(() => String)
   @IsString()
   name: string;
 
   @Column({ nullable: true })
-  @Field((type) => String, { nullable: true })
+  @Field(() => String, { nullable: true })
   @IsString()
   iconImg: string;
 
-  @Field((type) => [Restaurant])
-  @OneToMany((type) => Restaurant, (restaurant) => restaurant.category, {
+  @Field(() => [Restaurant])
+  @OneToMany(() => Restaurant, (restaurant) => restaurant.category, {
     nullable: true,
     onDelete: 'SET NULL', // If the category is deleted, set the category of the restaurant to null.
   })
   restaurants: Restaurant[];
 
   @Column({ unique: true })
-  @Field((type) => String)
+  @Field(() => String)
   @IsString()
   slug: string;
 }

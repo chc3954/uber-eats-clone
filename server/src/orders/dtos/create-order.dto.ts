@@ -4,19 +4,19 @@ import { OrderItemOption } from '../entities/order-item.entity';
 
 @InputType('CreateOrderItemInputType', { isAbstract: true })
 class CreateOrderItemInput {
-  @Field((type) => Int)
+  @Field(() => Int)
   dishId: number;
 
-  @Field((type) => [OrderItemOption], { nullable: true })
+  @Field(() => [OrderItemOption], { nullable: true })
   options?: OrderItemOption[];
 }
 
 @InputType()
 export class CreateOrderInput {
-  @Field((type) => Int)
+  @Field(() => Int)
   restaurantId: number;
 
-  @Field((type) => [CreateOrderItemInput])
+  @Field(() => [CreateOrderItemInput])
   items: CreateOrderItemInput[];
 }
 
