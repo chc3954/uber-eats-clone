@@ -201,6 +201,7 @@ export class RestaurantService {
       const [results, totalResult] = await this.restaurants.findAndCount({
         take: PAGE_SIZE,
         skip: (restaurantInput.page - 1) * PAGE_SIZE,
+        order: { isPromoted: 'DESC' },
       });
       return {
         ok: true,
@@ -245,6 +246,7 @@ export class RestaurantService {
         where: { name: ILike(`%${query}%`) },
         take: PAGE_SIZE,
         skip: (page - 1) * PAGE_SIZE,
+        order: { isPromoted: 'DESC' },
       });
       return {
         ok: true,

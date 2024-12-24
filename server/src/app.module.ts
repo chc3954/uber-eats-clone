@@ -20,6 +20,7 @@ import { OrderItem } from './orders/entities/order-item.entity';
 import { CommonModule } from './common/common.module';
 import { Payment } from './payments/entities/payment.entity';
 import { PaymentsModule } from './payments/payments.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -80,6 +81,7 @@ import { PaymentsModule } from './payments/payments.module';
         return { token: req.headers['x-jwt'] };
       },
     }),
+    ScheduleModule.forRoot(),
     JwtModule.forRoot({ privateKey: process.env.SECRET_KEY }),
     AuthModule,
     MailModule.forRoot({
