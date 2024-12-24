@@ -8,6 +8,8 @@ import {
 import { Role } from 'src/auth/role.decorator';
 import { AuthUser } from 'src/auth/auth.decorator';
 import { User } from 'src/users/entities/user.entity';
+import { Query } from '@nestjs/graphql';
+import { GetPaymentOutput } from './dtos/get-payment.dto';
 
 @Resolver(() => Payment)
 export class PaymentsResolver {
@@ -20,5 +22,11 @@ export class PaymentsResolver {
     @Args('input') createPaymentInput: CreatePaymentInput,
   ): Promise<CreatePaymentOutput> {
     return this.paymentsService.createPayment(owner, createPaymentInput);
+  }
+
+  @Query(() => GetPaymentOutput)
+  @Role(['Owner'])
+  getPayments(@AuthUser() user: User): Promise<GetPaymentOutput> {
+    return this.paymentsService.getPayments(user);
   }
 }
