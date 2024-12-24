@@ -13,16 +13,13 @@ export class AuthGuard implements CanActivate {
     private readonly userService: UserService,
   ) {}
 
-  // canActivate is a method that takes a context and returns a boolean.
+  // The canActivate method is an asynchronous method that takes a context and returns a boolean.
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // Get the roles from the metadata of the handler.
     const roles = this.reflector.get<AllowRoles>('roles', context.getHandler());
-    // If there are no roles, return true.
     if (!roles) {
       return true;
     }
 
-    // Get the user from the context.
     const gqlContext = GqlExecutionContext.create(context).getContext();
     const token = gqlContext.token;
 
