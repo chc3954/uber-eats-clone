@@ -3,9 +3,5 @@
 @tailwind utilities;
 
 .input {
-  @apply p-3 bg-gray-50 border-2 hover:border-gray-300 focus:border-gray-800 focus:outline-none shadow-inner rounded-md;
-}
-
-.button {
-  @apply bg-gray-700 text-white py-3 rounded-md hover:bg-gray-900 focus:outline-none;
+  @apply p-3 border-2 border-gray-200 text-lg font-light focus:outline-none focus:border-gray-500 transition-colors;
 }
