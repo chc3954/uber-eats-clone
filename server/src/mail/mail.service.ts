@@ -17,9 +17,8 @@ export class MailService {
     emailVars: EmailVar[],
   ): Promise<boolean> {
     const form = new FormData();
-    form.append('from', `Excited User <mailgun@${this.options.domain}>`);
-    // form.append('to', to);
-    form.append('to', 'chc3954@gmail.com'); // for testing
+    form.append('from', `Yuber Eats <mailgun@${this.options.domain}>`);
+    form.append('to', to);
     form.append('subject', subject);
     form.append('template', template);
     emailVars.forEach((eVar) => form.append(`v:${eVar.key}`, eVar.value));
@@ -37,7 +36,7 @@ export class MailService {
         },
       );
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
@@ -46,7 +45,6 @@ export class MailService {
     // template, to, subject, emailVars
     this.sendEmail('verify-email', email, 'Verify Your Email', [
       { key: 'code', value: code },
-      { key: 'username', value: email },
     ]);
   }
 }

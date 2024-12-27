@@ -1,1 +1,1 @@
-export const LOCALSTORAGE_TOKEN = "yuber-localstorage-token";
+export const LOCALSTORAGE_TOKEN = "yuber-eats-token";

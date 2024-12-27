@@ -12,6 +12,4 @@ const ME_QUERY = gql(`
   }
 `);
 
-export const useMe = () => {
-  return useQuery<MeQuery, MeQueryVariables>(ME_QUERY);
-};
+export const useMe = () => useQuery<MeQuery, MeQueryVariables>(ME_QUERY);
