@@ -1,7 +1,9 @@
 import { gql, useQuery } from "@apollo/client";
-import React from "react";
+import React, { useState } from "react";
 import { RestaurantsQuery, RestaurantsQueryVariables } from "../../__generated__/graphql";
 import { Helmet } from "react-helmet-async";
+import { Restaurant } from "../../components/restaurant";
+import { Category } from "../../components/category";
 
 const RESTAURANTS_QUERY = gql(`
   query restaurants ($input: RestaurantsInput!) {
@@ -36,16 +38,21 @@ const RESTAURANTS_QUERY = gql(`
 `);
 
 export const Restaurants = () => {
+  const [page, setPage] = useState(1);
   const { data, loading, error } = useQuery<RestaurantsQuery, RestaurantsQueryVariables>(
     RESTAURANTS_QUERY,
-    { variables: { input: { page: 1 } } }
+    { variables: { input: { page: page } } }
   );
+
+  const onPrevPageClick = () => setPage((current) => current - 1);
+  const onNextPageClick = () => setPage((current) => current + 1);
+
   return (
     <div>
       <Helmet>
         <title>Restaurants | Yuber Eats</title>
       </Helmet>
-      <div className="bg-gray-800 w-full py-40 flex items-center justify-center">
+      <div className="bg-gray-800 w-full py-20 flex items-center justify-center">
         <form>
           <input
             type="search"
@@ -58,23 +65,46 @@ export const Restaurants = () => {
         <div className="max-w-screen-2xl mx-auto mt-8">
           <div className="flex justify-around max-w-screen-sm mx-auto">
             {data?.allCategories.categories?.map((category) => (
-              <div className="flex flex-col items-center mx-3 cursor-pointer group">
-                <div
-                  className="w-20 aspect-square rounded-full text-center bg-cover group-hover:bg-green-200 group-hover:-translate-y-1 transition-all"
-                  style={{ backgroundImage: `url(${category.iconImg})` }}></div>
-                <span className="text-sm font-semibold">{category.name}</span>
-              </div>
+              <Category
+                key={category.id}
+                id={category.id + ""}
+                iconImg={category.iconImg || ""}
+                name={category.name}
+                restaurantCount={category.restaurantCount}
+              />
             ))}
           </div>
           <div className="grid mt-16 grid-flow-row auto-rows-max gap-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {data?.restaurants.results?.map((restaurant) => (
-              <div className="cursor-pointer">
-                <div
-                  className="w-full aspect-square bg-cover bg-center rounded-lg"
-                  style={{ backgroundImage: `url(${restaurant.coverImg})` }}></div>
-                <div className="p-2 text-lg font-bold">{restaurant.name}</div>
-              </div>
+              <Restaurant
+                key={restaurant.id}
+                id={restaurant.id + ""}
+                coverImg={restaurant.coverImg}
+                name={restaurant.name}
+                categoryName={restaurant.category?.name}
+              />
             ))}
+          </div>
+          <div className="grid grid-cols-3 text-center max-w-sm items-center mx-auto my-10">
+            <div>
+              <button
+                hidden={page === 1}
+                className="w-12 h-12 font-medium text-2xl focus:outline-none bg-gray-100 hover:bg-gray-200 transition-colors rounded-full p-2"
+                onClick={onPrevPageClick}>
+                &larr;
+              </button>
+            </div>
+            <div className="font-medium text-xl mx-3">
+              Page {page} of {data?.restaurants.totalPages}
+            </div>
+            <div>
+              <button
+                hidden={page === data?.restaurants.totalPages}
+                className="w-12 h-12 font-medium text-2xl focus:outline-none bg-gray-100 hover:bg-gray-200 transition-colors rounded-full p-2"
+                onClick={onNextPageClick}>
+                &rarr;
+              </button>
+            </div>
           </div>
         </div>
       )}

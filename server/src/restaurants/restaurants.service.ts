@@ -199,6 +199,7 @@ export class RestaurantService {
   ): Promise<RestaurantsOutput> {
     try {
       const [results, totalResults] = await this.restaurants.findAndCount({
+        relations: ['category'],
         take: PAGE_SIZE,
         skip: (restaurantInput.page - 1) * PAGE_SIZE,
         order: { isPromoted: 'DESC' },
@@ -244,6 +245,7 @@ export class RestaurantService {
     try {
       const [restaurants, totalResults] = await this.restaurants.findAndCount({
         where: { name: ILike(`%${query}%`) },
+        relations: ['category'],
         take: PAGE_SIZE,
         skip: (page - 1) * PAGE_SIZE,
         order: { isPromoted: 'DESC' },
