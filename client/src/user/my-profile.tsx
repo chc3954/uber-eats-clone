@@ -5,6 +5,7 @@ import { FormError } from "../components/form-error";
 import { Button } from "../components/button";
 import { gql, useApolloClient, useMutation } from "@apollo/client";
 import { EditProfileMutation, EditProfileMutationVariables } from "../__generated__/graphql";
+import { Helmet } from "react-helmet-async";
 
 interface IMyProfileForm {
   email: string;
@@ -78,6 +79,9 @@ export const MyProfile = () => {
 
   return (
     <div className="mt-52 flex flex-col items-center justify-center">
+      <Helmet>
+        <title>Profile | Yuber Eats</title>
+      </Helmet>
       <h4 className="mb-3 font-semibold text-2xl">My Profile</h4>
       <form className="grid max-w-screen-sm gap-3 mt-5 w-full" onSubmit={handleSubmit(onUpdate)}>
         <input

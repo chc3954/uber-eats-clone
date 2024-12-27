@@ -198,7 +198,7 @@ export class RestaurantService {
     restaurantInput: RestaurantsInput,
   ): Promise<RestaurantsOutput> {
     try {
-      const [results, totalResult] = await this.restaurants.findAndCount({
+      const [results, totalResults] = await this.restaurants.findAndCount({
         take: PAGE_SIZE,
         skip: (restaurantInput.page - 1) * PAGE_SIZE,
         order: { isPromoted: 'DESC' },
@@ -206,8 +206,8 @@ export class RestaurantService {
       return {
         ok: true,
         results,
-        totalPages: Math.ceil(totalResult / PAGE_SIZE),
-        totalResult,
+        totalPages: Math.ceil(totalResults / PAGE_SIZE),
+        totalResults: totalResults,
       };
     } catch {
       return {
@@ -242,7 +242,7 @@ export class RestaurantService {
     page,
   }: SearchRestaurantInput): Promise<SearchRestaurantOutput> {
     try {
-      const [restaurants, totalResult] = await this.restaurants.findAndCount({
+      const [restaurants, totalResults] = await this.restaurants.findAndCount({
         where: { name: ILike(`%${query}%`) },
         take: PAGE_SIZE,
         skip: (page - 1) * PAGE_SIZE,
@@ -251,8 +251,8 @@ export class RestaurantService {
       return {
         ok: true,
         restaurants,
-        totalPages: Math.ceil(totalResult / PAGE_SIZE),
-        totalResult,
+        totalPages: Math.ceil(totalResults / PAGE_SIZE),
+        totalResults: totalResults,
       };
     } catch {
       return {
