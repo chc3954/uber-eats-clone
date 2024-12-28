@@ -11,6 +11,7 @@ interface IRestaurantsProps {
         category?: {
           name: string;
         } | null;
+        isPromoted: boolean;
       }[]
     | null
     | undefined;
@@ -38,11 +39,11 @@ export const Restaurants: React.FC<IRestaurantsProps> = ({
       <div className="grid mt-16 grid-flow-row auto-rows-max gap-8 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {restaurants?.map((restaurant) => (
           <Restaurant
-            key={restaurant.id}
             id={restaurant.id + ""}
             coverImg={restaurant.coverImg}
             name={restaurant.name}
             categoryName={restaurant.category?.name}
+            isPromoted={restaurant.isPromoted}
           />
         ))}
       </div>

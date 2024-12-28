@@ -63,7 +63,7 @@ export const Search = () => {
           <Restaurants
             restaurants={data?.searchRestaurant.restaurants?.map((restaurant) => ({
               ...restaurant,
-              id: restaurant.id.toString(),
+              id: restaurant.id + "",
             }))}
             totalPages={data?.searchRestaurant.totalPages || 1}
             page={page}

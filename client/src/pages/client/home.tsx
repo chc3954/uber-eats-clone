@@ -88,7 +88,7 @@ export const Home = () => {
           <Restaurants
             restaurants={data?.restaurants.restaurants?.map((restaurant) => ({
               ...restaurant,
-              id: restaurant.id.toString(),
+              id: restaurant.id + "",
             }))}
             totalPages={data?.restaurants.totalPages || 1}
             page={page}

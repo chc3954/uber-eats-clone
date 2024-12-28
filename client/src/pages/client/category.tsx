@@ -55,7 +55,7 @@ export const Category = () => {
             <Restaurants
               restaurants={data.category.restaurants?.map((restaurant) => ({
                 ...restaurant,
-                id: restaurant.id.toString(),
+                id: restaurant.id + "",
               }))}
               totalPages={data?.category.totalPages ?? 1}
               page={page}
