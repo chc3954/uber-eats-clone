@@ -179,12 +179,14 @@ export class RestaurantService {
         skip: (page - 1) * PAGE_SIZE,
       });
       category.restaurants = restaurants;
-      const totalPages = await this.countRestaurants(category);
+      const totalResults = await this.countRestaurants(category);
 
       return {
         ok: true,
+        restaurants,
         category,
-        totalPages: Math.ceil(totalPages / PAGE_SIZE),
+        totalPages: Math.ceil(totalResults / PAGE_SIZE),
+        totalResults,
       };
     } catch {
       return {
@@ -206,7 +208,7 @@ export class RestaurantService {
       });
       return {
         ok: true,
-        results,
+        restaurants: results,
         totalPages: Math.ceil(totalResults / PAGE_SIZE),
         totalResults: totalResults,
       };

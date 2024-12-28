@@ -19,14 +19,14 @@ interface ICreateAccountForm {
   role: UserRole;
 }
 
-export const CREATE_ACCOUNT_MUTATION = gql(`
+export const CREATE_ACCOUNT_MUTATION = gql`
   mutation createAccount($createAccountInput: CreateAccountInput!) {
     createAccount(input: $createAccountInput) {
       ok
       error
     }
   }
-`);
+`;
 
 export const CreateAccount = () => {
   const navigate = useNavigate();
@@ -50,8 +50,7 @@ export const CreateAccount = () => {
       const { ok, error } = data.createAccount;
       if (ok) {
         console.log("Account Created! Please Log in");
-        const { email, password } = getValues();
-        navigate("/", { state: { email, password } });
+        navigate("/");
       } else {
         console.log(error);
       }

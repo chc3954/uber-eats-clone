@@ -5,13 +5,14 @@ import { useMe } from "../hooks/useMe";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 
-const VERIFY_EMAIL_MUTATION = gql(`
+const VERIFY_EMAIL_MUTATION = gql`
   mutation verifyEmail($verifyEmailInput: VerifyEmailInput!) {
     verifyEmail(input: $verifyEmailInput) {
       ok
       error
     }
-  }`);
+  }
+`;
 
 export const ConfirmEmail = () => {
   const navigate = useNavigate();
@@ -25,11 +26,11 @@ export const ConfirmEmail = () => {
         if (ok) {
           client.writeFragment({
             id: `User:${userData?.me.id}`,
-            fragment: gql(`
+            fragment: gql`
               fragment VerifiedUser on User {
                 verified
               }
-            `),
+            `,
             data: {
               verified: true,
             },

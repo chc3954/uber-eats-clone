@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { FormError } from "../components/form-error";
 import { gql, useMutation } from "@apollo/client";
 import { LoginMutation, LoginMutationVariables } from "../__generated__/graphql";
 import logo from "../images/uber-eats.svg";
 import { Button } from "../components/button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { isLoggedInVar, tokenVar } from "../apollo";
 import { LOCALSTORAGE_TOKEN } from "../constants";
@@ -15,7 +15,7 @@ interface ILoginForm {
   password: string;
 }
 
-export const LOGIN_MUTATION = gql(`
+export const LOGIN_MUTATION = gql`
   mutation login($loginInput: LoginInput!) {
     login(input: $loginInput) {
       ok
@@ -23,7 +23,7 @@ export const LOGIN_MUTATION = gql(`
       error
     }
   }
-`);
+`;
 
 export const Login = () => {
   const {
@@ -32,7 +32,6 @@ export const Login = () => {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<ILoginForm>();
-
   const [loginMutation, { loading, data: result }] = useMutation<
     LoginMutation,
     LoginMutationVariables

@@ -13,13 +13,14 @@ interface IMyProfileForm {
   confirmPassword: string;
 }
 
-const EDIT_PROFILE_MUTATION = gql(`
+const EDIT_PROFILE_MUTATION = gql`
   mutation editProfile($editProfileInput: EditProfileInput!) {
     editProfile(input: $editProfileInput) {
       ok
       error
     }
-  }`);
+  }
+`;
 
 export const MyProfile = () => {
   const { data: userData } = useMe();
@@ -48,12 +49,12 @@ export const MyProfile = () => {
           if (oldEmail !== newEmail) {
             client.writeFragment({
               id: `User:${id}`,
-              fragment: gql(`
+              fragment: gql`
                 fragment EditUser on User {
                   verified
                   email
                 }
-              `),
+              `,
               data: {
                 verified: false,
                 email: newEmail,
