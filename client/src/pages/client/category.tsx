@@ -6,6 +6,7 @@ import { Restaurant } from "../../components/restaurant";
 import { CategoryQuery, CategoryQueryVariables } from "../../__generated__/graphql";
 import { Helmet } from "react-helmet-async";
 import { Restaurants } from "../../components/restaurants";
+import { Back } from "../../components/back";
 
 const CATEGORY_QUERY = gql`
   query category($input: CategoryInput!) {
@@ -26,7 +27,7 @@ const CATEGORY_QUERY = gql`
   ${CATEGORY_FRAGMENT}
 `;
 
-export const Category = () => {
+export const CategoryPage = () => {
   const [page, setPage] = useState(1);
   const { slug } = useParams();
   const { data, loading } = useQuery<CategoryQuery, CategoryQueryVariables>(CATEGORY_QUERY, {
@@ -45,12 +46,8 @@ export const Category = () => {
       </Helmet>
       {!loading && (
         <>
-          <Link
-            to="/"
-            className="w-14 lg:w-16 aspect-square text-xl lg:text-3xl font-semibold bg-gray-100 hover:bg-gray-200 transition-colors rounded-full p-3 flex items-center justify-center">
-            &larr;
-          </Link>
-          <h2 className="mt-8 text-2xl lg:text-4xl font-bold">{data?.category.category?.name}</h2>
+          <Back />
+          <h2 className="text-2xl lg:text-4xl font-bold">{data?.category.category?.name}</h2>
           {data?.category && (
             <Restaurants
               restaurants={data.category.restaurants?.map((restaurant) => ({

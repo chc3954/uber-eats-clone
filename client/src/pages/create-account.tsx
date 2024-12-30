@@ -12,7 +12,7 @@ import {
   UserRole,
 } from "../__generated__/graphql";
 
-interface ICreateAccountForm {
+interface IFormProps {
   email: string;
   password: string;
   confirmPassword: string;
@@ -28,7 +28,7 @@ export const CREATE_ACCOUNT_MUTATION = gql`
   }
 `;
 
-export const CreateAccount = () => {
+export const CreateAccountPage = () => {
   const navigate = useNavigate();
   const {
     register,
@@ -36,7 +36,7 @@ export const CreateAccount = () => {
     watch,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<ICreateAccountForm>({
+  } = useForm<IFormProps>({
     defaultValues: {
       role: UserRole.Client,
     },
@@ -57,7 +57,7 @@ export const CreateAccount = () => {
     },
   });
 
-  const onLogin = () => {
+  const onCreateAccount = () => {
     if (!loading) {
       const { email, password, role } = getValues();
       createAccount({ variables: { createAccountInput: { email, password, role } } });
@@ -72,7 +72,7 @@ export const CreateAccount = () => {
       <div className="w-full max-w-screen-sm flex flex-col px-5 items-center">
         <img src={logo} className="w-52 mb-5 lg:mb-10" />
         <h4 className="w-full text-left font-medium text-lg lg:text-3xl">Let's get started</h4>
-        <form className="grid gap-3 mt-5 w-full" onSubmit={handleSubmit(onLogin)}>
+        <form className="grid gap-3 mt-5 w-full" onSubmit={handleSubmit(onCreateAccount)}>
           <input
             {...register("email", {
               required: "Email is required",
@@ -117,7 +117,7 @@ export const CreateAccount = () => {
         </form>
         <div className="mt-5">
           Already have an account?{" "}
-          <Link to="/" className="text-green-600 hover:underline">
+          <Link to="/" className="link">
             Log In
           </Link>
         </div>

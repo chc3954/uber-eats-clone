@@ -31,7 +31,7 @@ const RESTAURANTS_QUERY = gql`
   ${CATEGORY_FRAGMENT}
 `;
 
-export const Home = () => {
+export const HomePage = () => {
   const [page, setPage] = useState(1);
   const { data, loading, error } = useQuery<RestaurantsQuery, RestaurantsQueryVariables>(
     RESTAURANTS_QUERY,

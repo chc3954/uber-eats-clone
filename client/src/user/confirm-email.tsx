@@ -14,7 +14,7 @@ const VERIFY_EMAIL_MUTATION = gql`
   }
 `;
 
-export const ConfirmEmail = () => {
+export const ConfirmEmailPage = () => {
   const navigate = useNavigate();
   const client = useApolloClient();
   const { data: userData } = useMe();

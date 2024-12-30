@@ -1,20 +1,62 @@
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import { Home } from "../pages/client/home";
-import { NotFound } from "../pages/NotFound";
+import { HomePage } from "../pages/client/home";
+import { NotFoundPage } from "../pages/not-found";
 import { Header } from "../components/header";
 import { useMe } from "../hooks/useMe";
-import { ConfirmEmail } from "../user/confirm-email";
-import { MyProfile } from "../user/my-profile";
-import { Search } from "../pages/client/search";
-import { Category } from "../pages/client/category";
+import { ConfirmEmailPage } from "../user/confirm-email";
+import { MyProfilePage } from "../user/my-profile";
+import { SearchPage } from "../pages/client/search";
+import { CategoryPage } from "../pages/client/category";
+import { RestaurantPage } from "../pages/client/restaurant";
+import { MyRestaurantsPage } from "../pages/owner/my-restaurants";
+import { AddRestaurantPage } from "../pages/owner/add-restaurant";
 
 const ClientRoutes = [
-  <Route key={1} path="/confirm" element={<ConfirmEmail />} />,
-  <Route key={2} path="/" element={<Home />} />,
-  <Route key={3} path="/my-profile" element={<MyProfile />} />,
-  <Route key={4} path="/search" element={<Search />} />,
-  <Route key={5} path="/category/:slug" element={<Category />} />,
+  <Route key={1} path="/confirm" element={<ConfirmEmailPage />} />,
+  <Route key={2} path="/" element={<HomePage />} />,
+  <Route key={3} path="/my-profile" element={<MyProfilePage />} />,
+  <Route key={4} path="/search" element={<SearchPage />} />,
+  <Route key={5} path="/category/:slug" element={<CategoryPage />} />,
+  <Route key={6} path="/restaurant/:id" element={<RestaurantPage />} />,
+];
+
+const commonRoutes = [
+  {
+    path: "/confirm",
+    component: <ConfirmEmailPage />,
+  },
+  {
+    path: "/my-profile",
+    component: <MyProfilePage />,
+  },
+];
+
+const clientRoutes = [
+  {
+    path: "/",
+    component: <HomePage />,
+  },
+  {
+    path: "/search",
+    component: <SearchPage />,
+  },
+  {
+    path: "/category/:slug",
+    component: <CategoryPage />,
+  },
+  {
+    path: "/restaurant/:id",
+    component: <RestaurantPage />,
+  },
+];
+
+const ownerRoutes = [
+  { path: "/", component: <MyRestaurantsPage /> },
+  {
+    path: "/add-restaurant",
+    component: <AddRestaurantPage />,
+  },
 ];
 
 export const LoggedInRouter = () => {
@@ -32,8 +74,18 @@ export const LoggedInRouter = () => {
     <Router>
       <Header />
       <Routes>
-        {data.me.role === "Client" && ClientRoutes}
-        <Route path="*" element={<NotFound />} />
+        {data.me.role === "Client" &&
+          clientRoutes.map((route) => (
+            <Route key={route.path} path={route.path} element={route.component} />
+          ))}
+        {data.me.role === "Owner" &&
+          ownerRoutes.map((route) => (
+            <Route key={route.path} path={route.path} element={route.component} />
+          ))}
+        {commonRoutes.map((route) => (
+          <Route key={route.path} path={route.path} element={route.component} />
+        ))}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
   );

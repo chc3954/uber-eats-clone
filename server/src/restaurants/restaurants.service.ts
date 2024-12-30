@@ -27,6 +27,7 @@ import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dto';
 import { Dish } from './entities/dish.entity';
 import { EditDishInput, EditDishOutput } from './dtos/edit-dish.dto';
 import { DeleteDishInput, DeleteDishOutput } from './dtos/delete-dish.dto';
+import { MyRestaurantsOutput } from './dtos/my-restaurants.dto';
 
 const PAGE_SIZE = 25;
 
@@ -263,6 +264,17 @@ export class RestaurantService {
         ok: false,
         error: 'Could not search for restaurant',
       };
+    }
+  }
+
+  async myRestaurants(owner: User): Promise<MyRestaurantsOutput> {
+    try {
+      const restaurants = await this.restaurants.find({
+        where: { owner: { id: owner.id } },
+      });
+      return { ok: true, restaurants };
+    } catch {
+      return { ok: false, error: 'Could not find my restaurants' };
     }
   }
 

@@ -25,7 +25,7 @@ export const LOGIN_MUTATION = gql`
   }
 `;
 
-export const Login = () => {
+export const LoginPage = () => {
   const {
     register,
     getValues,
@@ -86,7 +86,7 @@ export const Login = () => {
         </form>
         <div className="mt-5">
           New to Yuber?{" "}
-          <Link to="/create-account" className="text-green-600 hover:underline">
+          <Link to="/create-account" className="link">
             Create an Account
           </Link>
         </div>

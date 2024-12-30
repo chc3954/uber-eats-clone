@@ -22,7 +22,7 @@ const EDIT_PROFILE_MUTATION = gql`
   }
 `;
 
-export const MyProfile = () => {
+export const MyProfilePage = () => {
   const { data: userData } = useMe();
   const client = useApolloClient();
   const {

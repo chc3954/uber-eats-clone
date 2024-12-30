@@ -5,6 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { RESTAURANT_FRAGMENT } from "../../fragments";
 import { SearchRestaurantQuery, SearchRestaurantQueryVariables } from "../../__generated__/graphql";
 import { Restaurants } from "../../components/restaurants";
+import { Back } from "../../components/back";
 
 const SEARCH_QUERY = gql`
   query searchRestaurant($input: SearchRestaurantInput!) {
@@ -21,7 +22,7 @@ const SEARCH_QUERY = gql`
   ${RESTAURANT_FRAGMENT}
 `;
 
-export const Search = () => {
+export const SearchPage = () => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -54,12 +55,8 @@ export const Search = () => {
       </Helmet>
       {!loading && (
         <div className="container">
-          <Link
-            to="/"
-            className="w-14 lg:w-16 aspect-square text-xl lg:text-3xl font-semibold bg-gray-100 hover:bg-gray-200 transition-colors rounded-full p-3 flex items-center justify-center">
-            &larr;
-          </Link>
-          <h2 className="mt-8 text-2xl lg:text-4xl font-bold">Search: '{searchTerm}'</h2>
+          <Back />
+          <h2 className="text-2xl lg:text-4xl font-bold">Search: '{searchTerm}'</h2>
           <Restaurants
             restaurants={data?.searchRestaurant.restaurants?.map((restaurant) => ({
               ...restaurant,
