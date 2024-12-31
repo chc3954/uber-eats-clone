@@ -14,9 +14,13 @@ export class Category extends CoreEntity {
   name: string;
 
   @Column({ nullable: true })
-  @Field(() => String, { nullable: true })
+  @Field(() => String, {
+    nullable: true,
+    defaultValue:
+      'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Deals.png',
+  })
   @IsString()
-  iconImg: string;
+  iconImg?: string;
 
   @Field(() => [Restaurant])
   @OneToMany(() => Restaurant, (restaurant) => restaurant.category, {
