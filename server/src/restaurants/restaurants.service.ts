@@ -30,6 +30,10 @@ import { Dish } from './entities/dish.entity';
 import { EditDishInput, EditDishOutput } from './dtos/edit-dish.dto';
 import { DeleteDishInput, DeleteDishOutput } from './dtos/delete-dish.dto';
 import { MyRestaurantsOutput } from './dtos/my-restaurants.dto';
+import {
+  MyRestaurantInput,
+  MyRestaurantOutput,
+} from './dtos/my-restaurant.dto';
 
 const PAGE_SIZE = 25;
 
@@ -277,6 +281,21 @@ export class RestaurantService {
       return { ok: true, restaurants };
     } catch {
       return { ok: false, error: 'Could not find my restaurants' };
+    }
+  }
+
+  async myRestaurant(
+    owner: User,
+    { id }: MyRestaurantInput,
+  ): Promise<MyRestaurantOutput> {
+    try {
+      const restaurant = await this.restaurants.findOneOrFail({
+        where: { id: id, owner: { id: owner.id } },
+        relations: ['menu'],
+      });
+      return { ok: true, restaurant };
+    } catch {
+      return { ok: false, error: 'Could not find restaurant' };
     }
   }
 

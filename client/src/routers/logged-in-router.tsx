@@ -11,6 +11,8 @@ import { CategoryPage } from "../pages/client/category";
 import { RestaurantPage } from "../pages/client/restaurant";
 import { MyRestaurantsPage } from "../pages/owner/my-restaurants";
 import { AddRestaurantPage } from "../pages/owner/add-restaurant";
+import { MyRestaurantPage } from "../pages/owner/my-restaurant";
+import { AddDishPage } from "../pages/owner/add-dish";
 
 const ClientRoutes = [
   <Route key={1} path="/confirm" element={<ConfirmEmailPage />} />,
@@ -46,7 +48,7 @@ const clientRoutes = [
     component: <CategoryPage />,
   },
   {
-    path: "/restaurant/:id",
+    path: "/restaurants/:id",
     component: <RestaurantPage />,
   },
 ];
@@ -57,6 +59,8 @@ const ownerRoutes = [
     path: "/add-restaurant",
     component: <AddRestaurantPage />,
   },
+  { path: "/restaurants/:id", component: <MyRestaurantPage /> },
+  { path: "/restaurants/:id/add-dish", component: <AddDishPage /> },
 ];
 
 export const LoggedInRouter = () => {

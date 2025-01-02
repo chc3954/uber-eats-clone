@@ -18,7 +18,7 @@ export const Restaurant: React.FC<IRestaurantProps> = ({
   categoryName,
   isPromoted,
 }) => (
-  <Link to={`/restaurant/${id}`}>
+  <Link to={`/restaurants/${id}`}>
     <div className="cursor-pointer">
       <div
         className="w-full aspect-square bg-cover bg-center rounded-lg relative"
