@@ -1,5 +1,5 @@
-import { gql, useMutation } from "@apollo/client";
-import React from "react";
+import { gql, useApolloClient, useMutation } from "@apollo/client";
+import React, { useState } from "react";
 import {
   CreateRestaurantMutation,
   CreateRestaurantMutationVariables,
@@ -9,6 +9,7 @@ import { Button } from "../../components/button";
 import { Helmet } from "react-helmet";
 import { Back } from "../../components/back";
 import { useNavigate } from "react-router-dom";
+import { MY_RESTAURANTS_QUERY } from "./my-restaurants";
 
 interface IFormProps {
   name: string;
@@ -22,11 +23,16 @@ const CREATE_RESTAURANT_MUTATION = gql`
     createRestaurant(input: $input) {
       ok
       error
+      restaurantId
     }
   }
 `;
 
+const temp_coverImg =
+  "https://tb-static.uber.com/prod/image-proc/processed_images/b2fdc84b16bbf90b9be3933889bba804/30be7d11a3ed6f6183354d1933fbb6c7.jpeg";
+
 export const AddRestaurantPage = () => {
+  const client = useApolloClient();
   const navigate = useNavigate();
   const {
     register,
@@ -40,9 +46,36 @@ export const AddRestaurantPage = () => {
     CreateRestaurantMutation,
     CreateRestaurantMutationVariables
   >(CREATE_RESTAURANT_MUTATION, {
+    // refetchQueries: [{ query: MY_RESTAURANTS_QUERY }],
     onCompleted: (data: CreateRestaurantMutation) => {
-      const { ok, error } = data.createRestaurant;
+      const { ok, restaurantId } = data.createRestaurant;
+
       if (ok) {
+        const { name, address, categoryName } = getValues();
+        const query = client.readQuery({ query: MY_RESTAURANTS_QUERY });
+        client.writeQuery({
+          query: MY_RESTAURANTS_QUERY,
+          data: {
+            myRestaurants: {
+              ...query.myRestaurants,
+              restaurants: [
+                {
+                  __typename: "Restaurant",
+                  id: restaurantId,
+                  name,
+                  address,
+                  coverImg: temp_coverImg,
+                  category: {
+                    __typename: "Category",
+                    name: categoryName,
+                  },
+                  isPromoted: false,
+                },
+                ...query.myRestaurants.restaurants,
+              ],
+            },
+          },
+        });
         navigate("/");
       }
     },
@@ -57,8 +90,7 @@ export const AddRestaurantPage = () => {
           name,
           address,
           categoryName,
-          coverImg:
-            "https://yuber-eats.s3.us-east-1.amazonaws.com/istockphoto-1170315961-612x612.jpg",
+          coverImg: temp_coverImg,
         },
       },
     });

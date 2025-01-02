@@ -4,8 +4,9 @@ import { RESTAURANT_FRAGMENT } from "../../fragments";
 import { MyRestaurantsQuery } from "../../__generated__/graphql";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
+import { Restaurant } from "../../components/restaurant";
 
-const MY_RESTAURANTS_QUERY = gql`
+export const MY_RESTAURANTS_QUERY = gql`
   query myRestaurants {
     myRestaurants {
       ok
@@ -26,13 +27,34 @@ export const MyRestaurantsPage = () => {
       <Helmet>
         <title>My Restaurants | Yuber Eats</title>
       </Helmet>
-      {data?.myRestaurants.ok && data?.myRestaurants.restaurants?.length === 0 && (
+      <div className="flex items-center justify-between mb-10">
+        <h2 className="text-3xl font-semibold inline-block">My Restaurants</h2>
+        <Link
+          className="px-4 py-2 bg-green-500 text-white rounded-full font-semibold hover:bg-green-600 transition-colors"
+          to="/add-restaurant">
+          + Add Restaurant
+        </Link>
+      </div>
+      {data?.myRestaurants.ok && data?.myRestaurants.restaurants?.length === 0 ? (
         <>
           <h4 className="text-xl mb-5">You have no restaurants.</h4>
           <Link className="link" to="/add-restaurant">
-            Create one &rarr;
+            Add one &rarr;
           </Link>
         </>
+      ) : (
+        <div className="responsive-grid">
+          {data?.myRestaurants.restaurants?.map((restaurant) => (
+            <Restaurant
+              key={restaurant.id}
+              id={restaurant.id + ""}
+              coverImg={restaurant.coverImg}
+              name={restaurant.name}
+              categoryName={restaurant.category?.name}
+              isPromoted={restaurant.isPromoted}
+            />
+          ))}
+        </div>
       )}
     </div>
   );

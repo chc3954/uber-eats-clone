@@ -36,7 +36,7 @@ export const Restaurants: React.FC<IRestaurantsProps> = ({
           <h4 className="text-2xl font-semibold mb-5">Oops! No restaurants match your search</h4>
         </div>
       )}
-      <div className="grid mt-16 grid-flow-row auto-rows-max gap-8 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      <div className="mt-16 responsive-grid">
         {restaurants?.map((restaurant) => (
           <Restaurant
             id={restaurant.id + ""}

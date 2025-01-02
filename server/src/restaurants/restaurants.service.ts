@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Restaurant } from './entities/restaurant.entity';
 import { ILike, Repository } from 'typeorm';
-import { CreateRestaurantInput } from './dtos/create-restaurant.dto';
+import {
+  CreateRestaurantInput,
+  CreateRestaurantOutput,
+} from './dtos/create-restaurant.dto';
 import { User } from 'src/users/entities/user.entity';
-import { CreateAccountOutput } from 'src/users/dtos/create-account.dto';
 import { Category } from './entities/category.entity';
 import {
   EditRestaurantInput,
@@ -44,7 +46,7 @@ export class RestaurantService {
   async createRestaurant(
     owner: User,
     createRestaurantInput: CreateRestaurantInput,
-  ): Promise<CreateAccountOutput> {
+  ): Promise<CreateRestaurantOutput> {
     try {
       const newRestaurant = this.restaurants.create(createRestaurantInput);
       newRestaurant.owner = owner;
@@ -53,7 +55,7 @@ export class RestaurantService {
       );
       await this.restaurants.save(newRestaurant);
 
-      return { ok: true };
+      return { ok: true, restaurantId: newRestaurant.id };
     } catch {
       return { ok: false, error: 'Could not create restaurant' };
     }
