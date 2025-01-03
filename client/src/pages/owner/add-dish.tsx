@@ -1,8 +1,8 @@
 import { gql, useMutation } from "@apollo/client";
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CreateDishMutation, CreateDishMutationVariables } from "../../__generated__/graphql";
-import { useForm } from "react-hook-form";
+import { get, useFieldArray, useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 import { Button } from "../../components/button";
 import { MY_RESTAURANT_QUERY } from "./my-restaurant";
@@ -10,11 +10,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { v4 as uuidv4 } from "uuid";
 
-interface IFromProps {
+interface IFormProps {
   name: string;
   price: string;
   description: string;
-  [options: string]: string;
+  options: { optionName: string; optionExtra: number }[];
 }
 
 const CREATE_DISH_MUTATION = gql`
@@ -28,17 +28,20 @@ const CREATE_DISH_MUTATION = gql`
 
 export const AddDishPage = () => {
   const navigate = useNavigate();
-  const [optionsNumber, setOptionsNumber] = useState<number[]>([]);
   const { id: restaurantId } = useParams() as { id: string };
   const {
     control,
     register,
     handleSubmit,
     getValues,
-    setValue,
     formState: { isValid },
-  } = useForm<IFromProps>({
+  } = useForm<IFormProps>({
     mode: "onChange",
+    shouldUnregister: true,
+  });
+  const { fields, append, remove } = useFieldArray<IFormProps>({
+    control,
+    name: "options",
   });
   const [createDish, { loading }] = useMutation<CreateDishMutation, CreateDishMutationVariables>(
     CREATE_DISH_MUTATION,
@@ -48,7 +51,12 @@ export const AddDishPage = () => {
   );
 
   const onAddDish = () => {
-    const { name, price, description, ...options } = getValues();
+    const { name, price, description, ...rest } = getValues();
+    const optionObjects = rest.options.map((option, _) => ({
+      name: option.optionName,
+      extra: option.optionExtra,
+    }));
+
     createDish({
       variables: {
         createDishInput: {
@@ -56,6 +64,7 @@ export const AddDishPage = () => {
           price: +price,
           description,
           restaurantId: +restaurantId,
+          options: optionObjects,
         },
       },
     });
@@ -63,13 +72,11 @@ export const AddDishPage = () => {
   };
 
   const onAddOption = () => {
-    setOptionsNumber((current) => [...current, +uuidv4()]);
+    append({ optionName: "", optionExtra: 0 });
   };
 
-  const onDeleteOption = (optionId: number) => {
-    setValue(`optionName-${optionId}`, "");
-    setValue(`optionExtra-${optionId}`, "");
-    setOptionsNumber((current) => current.filter((id) => id !== optionId));
+  const onRemoveOption = (index: number) => {
+    remove(index);
   };
 
   return (
@@ -107,29 +114,28 @@ export const AddDishPage = () => {
             onClick={onAddOption}>
             Add Dish Option
           </span>
-          {optionsNumber.length > 0 &&
-            optionsNumber.map((id) => (
-              <div key={id} className="mt-5">
-                <input
-                  {...register(`optionName-${id}`)}
-                  className="py-2 px-4 focus:outline-none focus:border-gray-600 border-2 mr-3"
-                  type="text"
-                  placeholder="Option Name"
-                />
-                <input
-                  {...register(`optionExtra-${id}`, { valueAsNumber: true })}
-                  className="py-2 px-4 focus:outline-none focus:border-gray-600 border-2"
-                  type="number"
-                  min={0}
-                  placeholder="Option Extra"
-                />
-                <span
-                  className="cursor-pointer text-gray-500 hover:text-red-400 py-3 px-4"
-                  onClick={() => onDeleteOption(id)}>
-                  <FontAwesomeIcon icon={faCircleXmark} />
-                </span>
-              </div>
-            ))}
+          {fields.map((field, index) => (
+            <div key={field.id} className="mt-5">
+              <input
+                {...register(`options.${index}.optionName` as const)}
+                className="py-2 px-4 focus:outline-none focus:border-gray-600 border-2 mr-3"
+                type="text"
+                placeholder="Option Name"
+              />
+              <input
+                {...register(`options.${index}.optionExtra` as const, { valueAsNumber: true })}
+                className="py-2 px-4 focus:outline-none focus:border-gray-600 border-2"
+                type="number"
+                min={0}
+                placeholder="Option Extra"
+              />
+              <span
+                className="cursor-pointer text-gray-500 hover:text-red-400 py-3 px-4"
+                onClick={() => onRemoveOption(index)}>
+                <FontAwesomeIcon icon={faCircleXmark} />
+              </span>
+            </div>
+          ))}
         </div>
         <Button loading={loading} disable={!isValid} actionText="Create Dish" />
       </form>
