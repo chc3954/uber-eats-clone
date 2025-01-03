@@ -1,8 +1,18 @@
 import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import { Link, useParams } from "react-router-dom";
-import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
+import { DISH_FRAGMENT, ORDERS_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import { MyRestaurantQuery, MyRestaurantQueryVariables } from "../../__generated__/graphql";
+import { Dish } from "../../components/dish";
+import {
+  VictoryAxis,
+  VictoryBar,
+  VictoryChart,
+  VictoryLabel,
+  VictoryLine,
+  VictoryTheme,
+  VictoryVoronoiContainer,
+} from "victory";
 
 export const MY_RESTAURANT_QUERY = gql`
   query myRestaurant($input: MyRestaurantInput!) {
@@ -14,11 +24,15 @@ export const MY_RESTAURANT_QUERY = gql`
         menu {
           ...DishParts
         }
+        orders {
+          ...OrderParts
+        }
       }
     }
   }
   ${RESTAURANT_FRAGMENT}
   ${DISH_FRAGMENT}
+  ${ORDERS_FRAGMENT}
 `;
 
 export const MyRestaurantPage = () => {
@@ -30,6 +44,16 @@ export const MyRestaurantPage = () => {
       },
     },
   });
+
+  const chartData = [
+    { x: 1, y: 1000 },
+    { x: 2, y: 2000 },
+    { x: 3, y: 3000 },
+    { x: 4, y: 4000 },
+    { x: 5, y: 3000 },
+    { x: 6, y: 2000 },
+    { x: 7, y: 1000 },
+  ];
 
   return (
     <div>
@@ -51,7 +75,42 @@ export const MyRestaurantPage = () => {
         <div className="mt-10">
           {data?.myRestaurant.restaurant?.menu?.length === 0 ? (
             <h4 className="text-xl mb-5">Please upload a dish!</h4>
-          ) : null}
+          ) : (
+            <div className="grid mt-16 md:grid-cols-3 gap-x-5 gap-y-10">
+              {data?.myRestaurant.restaurant?.menu?.map((dish) => (
+                <Dish
+                  key={dish.id}
+                  id={dish.id + ""}
+                  name={dish.name}
+                  description={dish.description}
+                  price={dish.price}
+                  photo={dish.photo + ""}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="my-16">
+          <h4 className="text-center text-2xl font-semibold">Sales</h4>
+          <div className="mx-auto">
+            <VictoryChart
+              theme={VictoryTheme.material}
+              width={window.innerWidth}
+              height={500}
+              containerComponent={
+                <VictoryVoronoiContainer labels={({ datum }) => `y: ${datum.y.toFixed(2)}`} />
+              }>
+              <VictoryLine
+                data={data?.myRestaurant.restaurant?.orders.map((order) => ({
+                  x: order.createdAt,
+                  y: order.total,
+                }))}
+                interpolation={"natural"}
+              />
+              <VictoryAxis dependentAxis tickFormat={(tick) => `$${tick.toFixed(0)}`} />
+              <VictoryAxis tickFormat={(tick) => new Date(tick).toLocaleDateString()} />
+            </VictoryChart>
+          </div>
         </div>
       </div>
     </div>

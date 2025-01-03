@@ -8,6 +8,7 @@ export class CreateDishInput extends PickType(Dish, [
   'price',
   'description',
   'options',
+  'photo',
 ]) {
   @Field(() => Int)
   restaurantId: number;
