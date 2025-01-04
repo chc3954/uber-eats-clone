@@ -1,18 +1,24 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { DISH_FRAGMENT, ORDERS_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
-import { MyRestaurantQuery, MyRestaurantQueryVariables } from "../../__generated__/graphql";
+import {
+  CreatePaymentMutation,
+  CreatePaymentMutationVariables,
+  MyRestaurantQuery,
+  MyRestaurantQueryVariables,
+} from "../../__generated__/graphql";
 import { Dish } from "../../components/dish";
 import {
   VictoryAxis,
-  VictoryBar,
   VictoryChart,
-  VictoryLabel,
   VictoryLine,
   VictoryTheme,
   VictoryVoronoiContainer,
 } from "victory";
+import { Helmet } from "react-helmet-async";
+import { useMe } from "../../hooks/useMe";
+import { Back } from "../../components/back";
 
 export const MY_RESTAURANT_QUERY = gql`
   query myRestaurant($input: MyRestaurantInput!) {
@@ -35,8 +41,18 @@ export const MY_RESTAURANT_QUERY = gql`
   ${ORDERS_FRAGMENT}
 `;
 
+const CREATE_PAYMENT_MUTATION = gql`
+  mutation createPayment($input: CreatePaymentInput!) {
+    createPayment(input: $input) {
+      ok
+      error
+    }
+  }
+`;
+
 export const MyRestaurantPage = () => {
   const { id } = useParams() as { id: string };
+  const { data: userData } = useMe();
   const { data } = useQuery<MyRestaurantQuery, MyRestaurantQueryVariables>(MY_RESTAURANT_QUERY, {
     variables: {
       input: {
@@ -44,42 +60,73 @@ export const MyRestaurantPage = () => {
       },
     },
   });
+  const [createPayment] = useMutation<CreatePaymentMutation, CreatePaymentMutationVariables>(
+    CREATE_PAYMENT_MUTATION,
+    {
+      onCompleted: (data: CreatePaymentMutation) => {
+        if (data.createPayment.ok) {
+          alert("Your restaurant is promoted!");
+        }
+      },
+    }
+  );
 
-  const chartData = [
-    { x: 1, y: 1000 },
-    { x: 2, y: 2000 },
-    { x: 3, y: 3000 },
-    { x: 4, y: 4000 },
-    { x: 5, y: 3000 },
-    { x: 6, y: 2000 },
-    { x: 7, y: 1000 },
-  ];
+  const onBuyPromotion = () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const Paddle = window.Paddle;
+    Paddle.Checkout.open({
+      product: "pro_01jgq9zzp3r5y020wsfch2hhq2",
+      email: userData?.me.email,
+      successCallback: (data: { checkout: { id: string } }) => {
+        createPayment({
+          variables: {
+            input: {
+              transactionId: data.checkout.id,
+              restaurantId: +id,
+            },
+          },
+        });
+      },
+    });
+  };
 
   return (
     <div>
+      <Helmet>
+        <title>{data?.myRestaurant.restaurant?.name || "Loading..."} | Nuber Eats</title>
+        <meta
+          http-equiv="Content-Security-Policy"
+          content="frame-ancestors 'self' http://localhost;"
+        />
+        <script src="https://cdn.paddle.com/paddle/paddle.js"></script>
+      </Helmet>
       <div
-        className="  bg-gray-700  py-28 bg-center bg-cover"
+        className="bg-gray-700 py-28 bg-center bg-cover"
         style={{
           backgroundImage: `url(${data?.myRestaurant.restaurant?.coverImg})`,
         }}></div>
       <div className="container mt-10">
+        <Back />
         <h2 className="text-4xl font-medium mb-10">
           {data?.myRestaurant.restaurant?.name || "Loading..."}
         </h2>
         <Link to={"add-dish"} className="mr-8 text-white bg-gray-800 py-3 px-10">
           Add Dish &rarr;
         </Link>
-        <Link to={``} className="text-white bg-green-600 py-3 px-10">
+        <span
+          onClick={onBuyPromotion}
+          className="text-white bg-green-600 py-3 px-10 cursor-pointer">
           Buy Promotion &rarr;
-        </Link>
+        </span>
         <div className="mt-10">
           {data?.myRestaurant.restaurant?.menu?.length === 0 ? (
             <h4 className="text-xl mb-5">Please upload a dish!</h4>
           ) : (
             <div className="grid mt-16 md:grid-cols-3 gap-x-5 gap-y-10">
-              {data?.myRestaurant.restaurant?.menu?.map((dish) => (
+              {data?.myRestaurant.restaurant?.menu?.map((dish, index) => (
                 <Dish
-                  key={dish.id}
+                  key={index}
                   id={dish.id + ""}
                   name={dish.name}
                   description={dish.description}
