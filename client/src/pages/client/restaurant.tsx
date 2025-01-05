@@ -1,8 +1,14 @@
 import { gql, useQuery } from "@apollo/client";
-import React from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { RESTAURANT_FRAGMENT } from "../../fragments";
-import { RestaurantQuery, RestaurantQueryVariables } from "../../__generated__/graphql";
+import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
+import {
+  CreateOrderItemInputType,
+  RestaurantQuery,
+  RestaurantQueryVariables,
+} from "../../__generated__/graphql";
+import { Dish } from "../../components/dish";
+import { set } from "react-hook-form";
 
 const RESTAURANT_QUERY = gql`
   query restaurant($input: RestaurantInput!) {
@@ -11,14 +17,29 @@ const RESTAURANT_QUERY = gql`
       error
       restaurant {
         ...RestaurantParts
+        menu {
+          ...DishParts
+        }
       }
     }
   }
   ${RESTAURANT_FRAGMENT}
+  ${DISH_FRAGMENT}
+`;
+
+const CREATE_ORDER_MUTATION = gql`
+  mutation createOrder($input: CreateOrderInput!) {
+    createOrder(input: $input) {
+      ok
+      error
+    }
+  }
 `;
 
 export const RestaurantPage = () => {
   const { id } = useParams() as { id: string };
+  const [orderStarted, setOrderStarted] = useState(false);
+  const [orderItems, setOrderItems] = useState<CreateOrderItemInputType[]>([]);
   const { data } = useQuery<RestaurantQuery, RestaurantQueryVariables>(RESTAURANT_QUERY, {
     variables: {
       input: {
@@ -27,12 +48,33 @@ export const RestaurantPage = () => {
     },
   });
 
+  const onStartOrder = () => {
+    setOrderStarted(true);
+    console.log(orderItems);
+  };
+
+  const isSelected = (dishId: number): boolean => {
+    return !!orderItems.find((item) => item.dishId === dishId);
+  };
+
+  const onClickItem = (dishId: number) => {
+    if (orderStarted) {
+      return;
+    }
+
+    setOrderItems((current: CreateOrderItemInputType[]) =>
+      isSelected(dishId)
+        ? current.filter((item) => item.dishId !== dishId)
+        : [{ dishId, options: [] }, ...current]
+    );
+  };
+
   return (
     <div>
       <div
         className="py-12 lg:py-40 bg-center bg-cover"
         style={{ backgroundImage: `url(${data?.restaurant.restaurant?.coverImg})` }}>
-        <div className="bg-white opacity-95 rounded-r shadow inline-block p-8 pl-12 lg:pl-48">
+        <div className="bg-white opacity-95 rounded-r shadow inline-block p-8 pl-36 lg:pl-48">
           <h4 className="text-2xl lg:text-4xl font-semibold mb-2">
             {data?.restaurant.restaurant?.name}
           </h4>
@@ -40,7 +82,28 @@ export const RestaurantPage = () => {
           <h6 className="text-sm font-light">{data?.restaurant.restaurant?.address}</h6>
         </div>
       </div>
-      <div className="container"></div>
+      <div className="container flex flex-col items-end mt-10">
+        <button onClick={onStartOrder} className="button">
+          {orderStarted ? "Ordering..." : "Start Order"}
+        </button>
+        <div className="w-full grid md:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-10 mt-16">
+          {data?.restaurant.restaurant?.menu?.map((dish, index) => (
+            <Dish
+              isSelected={isSelected(dish.id)}
+              key={index}
+              id={dish.id}
+              name={dish.name}
+              description={dish.description}
+              price={dish.price}
+              photo={dish.photo}
+              isCustomer={true}
+              options={dish.options}
+              orderStarted={orderStarted}
+              handleClickItem={onClickItem}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

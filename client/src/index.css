@@ -14,6 +14,10 @@
   @apply text-green-600 font-medium hover:underline;
 }
 
+.button {
+  @apply px-4 py-3 text-lg text-white bg-green-500 hover:bg-green-600 disabled:bg-gray-400 disabled:opacity-50 transition-colors;
+}
+
 .responsive-grid {
   @apply grid grid-flow-row auto-rows-max gap-8 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5;
 }
