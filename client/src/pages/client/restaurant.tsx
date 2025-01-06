@@ -4,11 +4,12 @@ import { useParams } from "react-router-dom";
 import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import {
   CreateOrderItemInputType,
+  DishOption,
+  Maybe,
   RestaurantQuery,
   RestaurantQueryVariables,
 } from "../../__generated__/graphql";
 import { Dish } from "../../components/dish";
-import { set } from "react-hook-form";
 
 const RESTAURANT_QUERY = gql`
   query restaurant($input: RestaurantInput!) {
@@ -48,7 +49,7 @@ export const RestaurantPage = () => {
     },
   });
 
-  const onStartOrder = () => {
+  const onMakeOrder = () => {
     setOrderStarted(true);
     console.log(orderItems);
   };
@@ -57,7 +58,7 @@ export const RestaurantPage = () => {
     return !!orderItems.find((item) => item.dishId === dishId);
   };
 
-  const onClickItem = (dishId: number) => {
+  const onClickItem = (dishId: number, selectedOption: Maybe<Array<DishOption>>) => {
     if (orderStarted) {
       return;
     }
@@ -65,7 +66,7 @@ export const RestaurantPage = () => {
     setOrderItems((current: CreateOrderItemInputType[]) =>
       isSelected(dishId)
         ? current.filter((item) => item.dishId !== dishId)
-        : [{ dishId, options: [] }, ...current]
+        : [{ dishId, options: selectedOption }, ...current]
     );
   };
 
@@ -83,7 +84,7 @@ export const RestaurantPage = () => {
         </div>
       </div>
       <div className="container flex flex-col items-end mt-10">
-        <button onClick={onStartOrder} className="button">
+        <button onClick={onMakeOrder} className="button">
           {orderStarted ? "Ordering..." : "Start Order"}
         </button>
         <div className="w-full grid md:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-10 mt-16">

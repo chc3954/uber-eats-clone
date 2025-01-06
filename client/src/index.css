@@ -15,7 +15,7 @@
 }
 
 .button {
-  @apply px-4 py-3 text-lg text-white bg-green-500 hover:bg-green-600 disabled:bg-gray-400 disabled:opacity-50 transition-colors;
+  @apply px-4 py-3 text-lg text-white rounded bg-green-500 hover:bg-green-600 disabled:bg-gray-400 disabled:opacity-50 transition-colors;
 }
 
 .responsive-grid {
