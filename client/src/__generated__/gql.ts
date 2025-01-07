@@ -35,6 +35,7 @@ const documents = {
     "\n              fragment VerifiedUser on User {\n                verified\n              }\n            ": types.VerifiedUserFragmentDoc,
     "\n  mutation editProfile($editProfileInput: EditProfileInput!) {\n    editProfile(input: $editProfileInput) {\n      ok\n      error\n    }\n  }\n": types.EditProfileDocument,
     "\n                fragment EditUser on User {\n                  verified\n                  email\n                }\n              ": types.EditUserFragmentDoc,
+    "\n  query getOrder($input: GetOrderInput!) {\n    getOrder(input: $input) {\n      ok\n      error\n      order {\n        id\n        status\n        total\n        driver {\n          email\n        }\n        customer {\n          email\n        }\n        restaurant {\n          name\n        }\n      }\n    }\n  }\n": types.GetOrderDocument,
 };
 
 /**
@@ -135,6 +136,10 @@ export function gql(source: "\n  mutation editProfile($editProfileInput: EditPro
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n                fragment EditUser on User {\n                  verified\n                  email\n                }\n              "): (typeof documents)["\n                fragment EditUser on User {\n                  verified\n                  email\n                }\n              "];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  query getOrder($input: GetOrderInput!) {\n    getOrder(input: $input) {\n      ok\n      error\n      order {\n        id\n        status\n        total\n        driver {\n          email\n        }\n        customer {\n          email\n        }\n        restaurant {\n          name\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query getOrder($input: GetOrderInput!) {\n    getOrder(input: $input) {\n      ok\n      error\n      order {\n        id\n        status\n        total\n        driver {\n          email\n        }\n        customer {\n          email\n        }\n        restaurant {\n          name\n        }\n      }\n    }\n  }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

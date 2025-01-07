@@ -13,6 +13,7 @@ import { MyRestaurantsPage } from "../pages/owner/my-restaurants";
 import { AddRestaurantPage } from "../pages/owner/add-restaurant";
 import { MyRestaurantPage } from "../pages/owner/my-restaurant";
 import { AddDishPage } from "../pages/owner/add-dish";
+import { OrderPage } from "../user/order";
 
 const ClientRoutes = [
   <Route key={1} path="/confirm" element={<ConfirmEmailPage />} />,
@@ -31,6 +32,10 @@ const commonRoutes = [
   {
     path: "/my-profile",
     component: <MyProfilePage />,
+  },
+  {
+    path: "/orders/:id",
+    component: <OrderPage />,
   },
 ];
 

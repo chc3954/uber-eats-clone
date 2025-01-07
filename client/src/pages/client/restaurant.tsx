@@ -127,14 +127,16 @@ export const RestaurantPage = () => {
   const onCancelOrder = () => setOrderStarted(false);
 
   const onConfirmOrder = () => {
-    createOrderMutation({
-      variables: {
-        input: {
-          restaurantId: +id,
-          items: orderItems,
+    if (!loading) {
+      createOrderMutation({
+        variables: {
+          input: {
+            restaurantId: +id,
+            items: orderItems,
+          },
         },
-      },
-    });
+      });
+    }
   };
 
   return (
