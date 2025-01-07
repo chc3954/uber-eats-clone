@@ -1,6 +1,22 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useSubscription } from "@apollo/client";
 import { useParams } from "react-router-dom";
-import { GetOrderQuery, GetOrderQueryVariables } from "../__generated__/graphql";
+import {
+  GetOrderQuery,
+  GetOrderQueryVariables,
+  OrderUpdatesSubscription,
+  OrderUpdatesSubscriptionVariables,
+} from "../__generated__/graphql";
+import { Helmet } from "react-helmet-async";
+import { FULL_ORDER_FRAGMENT } from "../fragments";
+
+const ORDER_SUBSCRIPTION = gql`
+  subscription orderUpdates($input: OrderUpdatesInput!) {
+    orderUpdates(input: $input) {
+      ...FullOrderParts
+    }
+  }
+  ${FULL_ORDER_FRAGMENT}
+`;
 
 const GET_ORDER_QUERY = gql`
   query getOrder($input: GetOrderInput!) {
@@ -8,21 +24,11 @@ const GET_ORDER_QUERY = gql`
       ok
       error
       order {
-        id
-        status
-        total
-        driver {
-          email
-        }
-        customer {
-          email
-        }
-        restaurant {
-          name
-        }
+        ...FullOrderParts
       }
     }
   }
+  ${FULL_ORDER_FRAGMENT}
 `;
 
 export const OrderPage = () => {
@@ -30,9 +36,18 @@ export const OrderPage = () => {
   const { data } = useQuery<GetOrderQuery, GetOrderQueryVariables>(GET_ORDER_QUERY, {
     variables: { input: { id: +id } },
   });
+  const { data: subscriptionData } = useSubscription<
+    OrderUpdatesSubscription,
+    OrderUpdatesSubscriptionVariables
+  >(ORDER_SUBSCRIPTION, {
+    variables: { input: { id: +id } },
+  });
 
   return (
     <div className="mt-32 container flex justify-center">
+      <Helmet>
+        <title> Order #{id} | Yuber Eats</title>
+      </Helmet>
       <div className="border border-gray-800 w-full max-w-screen-sm flex flex-col justify-center">
         <h4 className="bg-gray-800 w-full py-5 text-white text-center text-xl">Order #{id}</h4>
         <h5 className="p-5 pt-10 text-3xl text-center ">

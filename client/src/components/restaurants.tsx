@@ -38,6 +38,7 @@ export const Restaurants: React.FC<IRestaurantsProps> = ({
       <div className="mt-16 responsive-grid">
         {restaurants?.map((restaurant) => (
           <Restaurant
+            key={restaurant.id}
             id={restaurant.id + ""}
             coverImg={restaurant.coverImg}
             name={restaurant.name}
