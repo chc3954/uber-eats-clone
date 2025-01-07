@@ -5,30 +5,45 @@ import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 
 interface IDishProps {
-  id: number;
+  id?: number;
+  description: string;
   name: string;
-  description?: string;
   price: number;
-  photo?: string | null;
-  options?: Maybe<Array<DishOption>>;
+  photo?: string;
   isCustomer?: boolean;
   orderStarted?: boolean;
   isSelected?: boolean;
-  handleClickItem?: (dishId: number, options: Maybe<Array<DishOption>>) => void;
+  options?: Maybe<Array<DishOption>> | null;
+  addItemToOrder?: (dishId: number) => void;
+  removeFromOrder?: (dishId: number) => void;
+  children?: React.ReactNode;
 }
 
 export const Dish: React.FC<IDishProps> = ({
-  id,
-  name,
+  id = 0,
   description,
+  name,
   price,
   photo = "",
-  options = [],
   isCustomer = false,
   orderStarted = false,
-  isSelected = false,
-  handleClickItem,
+  options,
+  isSelected,
+  addItemToOrder,
+  removeFromOrder,
+  children: dishOptions,
 }) => {
+  const handleClickItem = () => {
+    if (!orderStarted) {
+      if (!isSelected && addItemToOrder) {
+        return addItemToOrder(id);
+      }
+      if (isSelected && removeFromOrder) {
+        return removeFromOrder(id);
+      }
+    }
+  };
+
   return (
     <div
       className={`w-full border rounded transition-all flex justify-between ${
@@ -40,9 +55,7 @@ export const Dish: React.FC<IDishProps> = ({
       <div className="w-full flex flex-col p-3">
         <div className="flex justify-between">
           <h3 className="text-lg font-semibold">{name}</h3>
-          <span
-            className=""
-            onClick={() => (!orderStarted && handleClickItem ? handleClickItem(id, []) : null)}>
+          <span className="" onClick={handleClickItem}>
             <FontAwesomeIcon
               icon={faCirclePlus}
               className={`text-3xl cursor-pointer transition-transform ${
@@ -56,18 +69,7 @@ export const Dish: React.FC<IDishProps> = ({
         <h4 className="mb-5 h-full text-xs">{description}</h4>
         <span className="font-semibold">${price.toFixed(2)}</span>
         {isCustomer && options?.length !== 0 && (
-          <div className="flex items-center text-sm mt-1">
-            {options?.map((option, index) => (
-              <span
-                key={index}
-                onClick={() => (!orderStarted && handleClickItem ? handleClickItem(id, []) : null)}
-                className="flex items-center mr-2 cursor-pointer">
-                <h6 className="text-sm opacity-75 border px-2 py-1 rounded hover:border-gray-800">
-                  {option.name}(+${option.extra})
-                </h6>
-              </span>
-            ))}
-          </div>
+          <div className="flex items-center text-sm mt-1">{dishOptions}</div>
         )}
       </div>
     </div>

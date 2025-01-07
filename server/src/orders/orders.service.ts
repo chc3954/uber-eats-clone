@@ -95,7 +95,7 @@ export class OrdersService {
       await this.pubSub.publish(NEW_PENDING_ORDER, {
         pendingOrders: { order, ownerId: restaurant.ownerId },
       });
-      return { ok: true };
+      return { ok: true, orderId: order.id };
     } catch {
       return { ok: false, error: 'Could not create order.' };
     }
