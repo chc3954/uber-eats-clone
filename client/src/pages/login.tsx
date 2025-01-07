@@ -1,11 +1,10 @@
-import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { FormError } from "../components/form-error";
 import { gql, useMutation } from "@apollo/client";
 import { LoginMutation, LoginMutationVariables } from "../__generated__/graphql";
 import logo from "../images/uber-eats.svg";
 import { Button } from "../components/button";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { isLoggedInVar, tokenVar } from "../apollo";
 import { LOCALSTORAGE_TOKEN } from "../constants";

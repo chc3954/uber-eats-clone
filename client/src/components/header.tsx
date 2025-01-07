@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import logo from "../images/uber-eats.svg";
 import { useMe } from "../hooks/useMe";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,7 +13,26 @@ interface ISearchForm {
 export const Header: React.FC = () => {
   const { data } = useMe();
   const navigate = useNavigate();
+  const [showBox, setShowBox] = useState(false);
+  const boxRef = useRef<HTMLDivElement>(null);
   const { register, handleSubmit, getValues, watch, setValue } = useForm<ISearchForm>();
+
+  useEffect(() => {
+    setShowBox(false);
+  }, [navigate]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (boxRef.current && !boxRef.current.contains(event.target as Node)) {
+        setShowBox(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [boxRef]);
 
   const onSearch = () => {
     const { searchTerm } = getValues();
@@ -25,6 +44,10 @@ export const Header: React.FC = () => {
 
   const onClearSearch = () => {
     setValue("searchTerm", "");
+  };
+
+  const onToggleBox = () => {
+    setShowBox((prev) => !prev);
   };
 
   return (
@@ -62,12 +85,29 @@ export const Header: React.FC = () => {
               )}
             </div>
           </form>
-          <div className="text-sm">
+          <div className="text-sm relative" ref={boxRef}>
+            <div onClick={onToggleBox} className="flex items-center justify-center cursor-pointer">
+              <div className="mr-2 lg:inline-block">{data?.me.email}</div>
+              <FontAwesomeIcon icon={faUser} className="p-2 block bg-gray-200 rounded-full" />
+            </div>
+            <div
+              className={`absolute m-1 bg-white border-2 shadow rounded flex flex-col ${
+                showBox ? "block" : "hidden"
+              }`}>
+              <Link to="/my-profile" className="p-3 border-b hover:bg-gray-200">
+                My Profile
+              </Link>
+              <Link to="/orders" className="p-3 hover:bg-gray-200">
+                Ordres
+              </Link>
+            </div>
+          </div>
+          {/* <div className="text-sm">
             <Link to="/my-profile" className="flex items-center justify-center">
               <div className="mr-2 hidden lg:inline-block">{data?.me.email}</div>
               <FontAwesomeIcon icon={faUser} className="p-2 block bg-gray-200 rounded-full" />
             </Link>
-          </div>
+          </div> */}
         </div>
       </header>
     </>

@@ -1,6 +1,5 @@
 import React from "react";
 import { Restaurant } from "./restaurant";
-import { CategoryQuery, RestaurantsQuery, SearchRestaurantQuery } from "../__generated__/graphql";
 
 interface IRestaurantsProps {
   restaurants?:

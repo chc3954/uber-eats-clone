@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { gql, useApolloClient, useMutation } from "@apollo/client";
 import { VerifyEmailMutation, VerifyEmailMutationVariables } from "../__generated__/graphql";
 import { useMe } from "../hooks/useMe";

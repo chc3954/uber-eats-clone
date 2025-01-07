@@ -1,5 +1,4 @@
 import { gql, useMutation } from "@apollo/client";
-import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CreateDishMutation, CreateDishMutationVariables } from "../../__generated__/graphql";
 import { get, useFieldArray, useForm } from "react-hook-form";
@@ -8,7 +7,6 @@ import { Button } from "../../components/button";
 import { MY_RESTAURANT_QUERY } from "./my-restaurant";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
-import { v4 as uuidv4 } from "uuid";
 
 interface IFormProps {
   name: string;

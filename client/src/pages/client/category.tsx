@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import { gql, useQuery } from "@apollo/client";
-import { Restaurant } from "../../components/restaurant";
 import { CategoryQuery, CategoryQueryVariables } from "../../__generated__/graphql";
 import { Helmet } from "react-helmet-async";
 import { Restaurants } from "../../components/restaurants";

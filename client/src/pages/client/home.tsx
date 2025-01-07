@@ -1,10 +1,8 @@
 import { gql, useQuery } from "@apollo/client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { RestaurantsQuery, RestaurantsQueryVariables } from "../../__generated__/graphql";
 import { Helmet } from "react-helmet-async";
-import { Restaurant } from "../../components/restaurant";
 import { Categories } from "../../components/categories";
-import { useForm } from "react-hook-form";
 import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import { Restaurants } from "../../components/restaurants";
 

@@ -1,5 +1,4 @@
 import { gql, useQuery } from "@apollo/client";
-import React from "react";
 import { RESTAURANT_FRAGMENT } from "../../fragments";
 import { MyRestaurantsQuery } from "../../__generated__/graphql";
 import { Helmet } from "react-helmet-async";

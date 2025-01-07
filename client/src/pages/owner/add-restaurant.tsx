@@ -1,5 +1,4 @@
 import { gql, useApolloClient, useMutation } from "@apollo/client";
-import React, { useState } from "react";
 import {
   CreateRestaurantMutation,
   CreateRestaurantMutationVariables,

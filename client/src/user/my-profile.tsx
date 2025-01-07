@@ -1,4 +1,3 @@
-import React from "react";
 import { useMe } from "../hooks/useMe";
 import { useForm } from "react-hook-form";
 import { FormError } from "../components/form-error";

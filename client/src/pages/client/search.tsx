@@ -1,7 +1,7 @@
 import { gql, useLazyQuery } from "@apollo/client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { RESTAURANT_FRAGMENT } from "../../fragments";
 import { SearchRestaurantQuery, SearchRestaurantQueryVariables } from "../../__generated__/graphql";
 import { Restaurants } from "../../components/restaurants";
