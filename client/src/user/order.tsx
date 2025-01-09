@@ -1,13 +1,14 @@
-import { gql, useQuery, useSubscription } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import {
   GetOrderQuery,
   GetOrderQueryVariables,
   OrderUpdatesSubscription,
-  OrderUpdatesSubscriptionVariables,
 } from "../__generated__/graphql";
 import { Helmet } from "react-helmet-async";
 import { FULL_ORDER_FRAGMENT } from "../fragments";
+import { useEffect } from "react";
+import { useMe } from "../hooks/useMe";
 
 const ORDER_SUBSCRIPTION = gql`
   subscription orderUpdates($input: OrderUpdatesInput!) {
@@ -33,15 +34,42 @@ const GET_ORDER_QUERY = gql`
 
 export const OrderPage = () => {
   const { id } = useParams() as { id: string };
-  const { data } = useQuery<GetOrderQuery, GetOrderQueryVariables>(GET_ORDER_QUERY, {
-    variables: { input: { id: +id } },
-  });
-  const { data: subscriptionData } = useSubscription<
-    OrderUpdatesSubscription,
-    OrderUpdatesSubscriptionVariables
-  >(ORDER_SUBSCRIPTION, {
-    variables: { input: { id: +id } },
-  });
+  const { data: userData } = useMe();
+  const { data, subscribeToMore } = useQuery<GetOrderQuery, GetOrderQueryVariables>(
+    GET_ORDER_QUERY,
+    {
+      variables: { input: { id: +id } },
+    }
+  );
+
+  useEffect(() => {
+    if (data?.getOrder.ok) {
+      subscribeToMore({
+        document: ORDER_SUBSCRIPTION,
+        variables: {
+          input: {
+            id: +id,
+          },
+        },
+        // @ts-expect-error: TypeScript does not recognize the subscriptionData type
+        updateQuery: (
+          prev,
+          { subscriptionData: { data } }: { subscriptionData: { data: OrderUpdatesSubscription } }
+        ) => {
+          if (!data) return prev;
+
+          return {
+            getOrder: {
+              ...prev.getOrder,
+              order: {
+                ...data.orderUpdates,
+              },
+            },
+          };
+        },
+      });
+    }
+  }, [data]);
 
   return (
     <div className="mt-32 container flex justify-center">
@@ -66,9 +94,21 @@ export const OrderPage = () => {
             Driver:&nbsp;
             <span className="font-medium">{data?.getOrder.order?.driver?.email || "Not yet"}</span>
           </div>
-          <span className=" text-center mt-5 mb-3  text-2xl text-green-600">
-            Status: {data?.getOrder.order?.status}
-          </span>
+          {userData?.me.role === "Client" && (
+            <span className=" text-center mt-5 mb-3  text-2xl text-green-600">
+              Status: {data?.getOrder.order?.status}
+            </span>
+          )}
+          {userData?.me.role === "Owner" && (
+            <>
+              {data?.getOrder.order?.status === "Pending" && (
+                <button className="button">Accept Order</button>
+              )}
+              {data?.getOrder.order?.status === "Cooking" && (
+                <button className="button">Ready to Pickup</button>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>

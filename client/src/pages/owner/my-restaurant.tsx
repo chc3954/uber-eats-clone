@@ -1,11 +1,12 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { Link, useParams } from "react-router-dom";
+import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { DISH_FRAGMENT, ORDERS_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import {
   CreatePaymentMutation,
   CreatePaymentMutationVariables,
   MyRestaurantQuery,
   MyRestaurantQueryVariables,
+  PendingOrdersSubscription,
 } from "../../__generated__/graphql";
 import { Dish } from "../../components/dish";
 import {
@@ -18,6 +19,7 @@ import {
 import { Helmet } from "react-helmet-async";
 import { useMe } from "../../hooks/useMe";
 import { Back } from "../../components/back";
+import { useEffect } from "react";
 
 export const MY_RESTAURANT_QUERY = gql`
   query myRestaurant($input: MyRestaurantInput!) {
@@ -49,7 +51,17 @@ const CREATE_PAYMENT_MUTATION = gql`
   }
 `;
 
+const PENDING_ORDERS_SUBSCRIPTION = gql`
+  subscription pendingOrders {
+    pendingOrders {
+      ...OrderParts
+    }
+  }
+  ${ORDERS_FRAGMENT}
+`;
+
 export const MyRestaurantPage = () => {
+  const navigate = useNavigate();
   const { id } = useParams() as { id: string };
   const { data: userData } = useMe();
   const { data } = useQuery<MyRestaurantQuery, MyRestaurantQueryVariables>(MY_RESTAURANT_QUERY, {
@@ -59,6 +71,7 @@ export const MyRestaurantPage = () => {
       },
     },
   });
+
   const [createPayment] = useMutation<CreatePaymentMutation, CreatePaymentMutationVariables>(
     CREATE_PAYMENT_MUTATION,
     {
@@ -69,6 +82,16 @@ export const MyRestaurantPage = () => {
       },
     }
   );
+
+  const { data: subscriptionData } = useSubscription<PendingOrdersSubscription>(
+    PENDING_ORDERS_SUBSCRIPTION
+  );
+
+  useEffect(() => {
+    if (subscriptionData?.pendingOrders.id) {
+      navigate(`/orders/${subscriptionData.pendingOrders.id}`);
+    }
+  }, [subscriptionData]);
 
   const onBuyPromotion = () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -126,7 +149,7 @@ export const MyRestaurantPage = () => {
               {data?.myRestaurant.restaurant?.menu?.map((dish, index) => (
                 <Dish
                   key={index}
-                  id={dish.id + ""}
+                  id={dish.id}
                   name={dish.name}
                   description={dish.description}
                   price={dish.price}

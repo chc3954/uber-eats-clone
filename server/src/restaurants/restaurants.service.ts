@@ -291,7 +291,7 @@ export class RestaurantService {
     try {
       const restaurant = await this.restaurants.findOneOrFail({
         where: { id: id, owner: { id: owner.id } },
-        relations: ['menu'],
+        relations: ['menu', 'orders'],
       });
       return { ok: true, restaurant };
     } catch {

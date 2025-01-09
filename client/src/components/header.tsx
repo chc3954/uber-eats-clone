@@ -50,6 +50,11 @@ export const Header: React.FC = () => {
     setShowBox((prev) => !prev);
   };
 
+  const onLogout = () => {
+    localStorage.removeItem("yuber-eats-token");
+    window.location.reload();
+  };
+
   return (
     <>
       {!data?.me.verified && (
@@ -97,9 +102,12 @@ export const Header: React.FC = () => {
               <Link to="/my-profile" className="p-3 border-b hover:bg-gray-200">
                 My Profile
               </Link>
-              <Link to="/orders" className="p-3 hover:bg-gray-200">
+              <Link to="/orders" className="p-3 border-b hover:bg-gray-200">
                 Ordres
               </Link>
+              <div className="p-3 border-b hover:bg-gray-200 cursor-pointer" onClick={onLogout}>
+                Log Out
+              </div>
             </div>
           </div>
           {/* <div className="text-sm">

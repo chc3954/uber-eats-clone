@@ -55,7 +55,7 @@ export const Dish: React.FC<IDishProps> = ({
       <div className="w-full flex flex-col p-3">
         <div className="flex justify-between">
           <h3 className="text-lg font-semibold">{name}</h3>
-          <span className="" onClick={handleClickItem}>
+          <span className="" onClick={handleClickItem} hidden={!isCustomer}>
             <FontAwesomeIcon
               icon={faCirclePlus}
               className={`text-3xl cursor-pointer transition-transform ${
