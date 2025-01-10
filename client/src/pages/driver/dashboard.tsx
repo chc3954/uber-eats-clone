@@ -1,4 +1,3 @@
-//AIzaSyC6xc-NGTvmeaKIODh3e47o2vA-XX7nTns
 import { gql, useMutation, useSubscription } from "@apollo/client";
 import GoogleMapReact from "google-map-react";
 import { useEffect, useState } from "react";
