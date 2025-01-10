@@ -96,7 +96,7 @@ export const Header: React.FC = () => {
               <FontAwesomeIcon icon={faUser} className="p-2 block bg-gray-200 rounded-full" />
             </div>
             <div
-              className={`absolute m-1 bg-white border-2 shadow rounded flex flex-col ${
+              className={`absolute m-1 bg-white border-2 shadow rounded flex flex-col z-10 ${
                 showBox ? "block" : "hidden"
               }`}>
               <Link to="/my-profile" className="p-3 border-b hover:bg-gray-200">
@@ -110,12 +110,6 @@ export const Header: React.FC = () => {
               </div>
             </div>
           </div>
-          {/* <div className="text-sm">
-            <Link to="/my-profile" className="flex items-center justify-center">
-              <div className="mr-2 hidden lg:inline-block">{data?.me.email}</div>
-              <FontAwesomeIcon icon={faUser} className="p-2 block bg-gray-200 rounded-full" />
-            </Link>
-          </div> */}
         </div>
       </header>
     </>

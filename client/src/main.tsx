@@ -7,11 +7,11 @@ import { client } from "./apollo.ts";
 import { HelmetProvider } from "react-helmet-async";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ApolloProvider client={client}>
-      <HelmetProvider>
-        <App />
-      </HelmetProvider>
-    </ApolloProvider>
-  </StrictMode>
+  // <StrictMode>
+  <ApolloProvider client={client}>
+    <HelmetProvider>
+      <App />
+    </HelmetProvider>
+  </ApolloProvider>
+  // </StrictMode>
 );

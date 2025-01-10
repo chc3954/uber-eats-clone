@@ -1,6 +1,11 @@
 import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { DISH_FRAGMENT, ORDERS_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
+import {
+  DISH_FRAGMENT,
+  FULL_ORDER_FRAGMENT,
+  ORDERS_FRAGMENT,
+  RESTAURANT_FRAGMENT,
+} from "../../fragments";
 import {
   CreatePaymentMutation,
   CreatePaymentMutationVariables,
@@ -54,10 +59,10 @@ const CREATE_PAYMENT_MUTATION = gql`
 const PENDING_ORDERS_SUBSCRIPTION = gql`
   subscription pendingOrders {
     pendingOrders {
-      ...OrderParts
+      ...FullOrderParts
     }
   }
-  ${ORDERS_FRAGMENT}
+  ${FULL_ORDER_FRAGMENT}
 `;
 
 export const MyRestaurantPage = () => {

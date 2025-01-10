@@ -1,9 +1,13 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import {
+  EditOrderMutation,
+  EditOrderMutationVariables,
   GetOrderQuery,
   GetOrderQueryVariables,
+  OrderStatus,
   OrderUpdatesSubscription,
+  UserRole,
 } from "../__generated__/graphql";
 import { Helmet } from "react-helmet-async";
 import { FULL_ORDER_FRAGMENT } from "../fragments";
@@ -32,9 +36,21 @@ const GET_ORDER_QUERY = gql`
   ${FULL_ORDER_FRAGMENT}
 `;
 
+const EDIT_ORDER_MUTATION = gql`
+  mutation editOrder($input: EditOrderInput!) {
+    editOrder(input: $input) {
+      ok
+      error
+    }
+  }
+`;
+
 export const OrderPage = () => {
   const { id } = useParams() as { id: string };
   const { data: userData } = useMe();
+  const [editOrder] = useMutation<EditOrderMutation, EditOrderMutationVariables>(
+    EDIT_ORDER_MUTATION
+  );
   const { data, subscribeToMore } = useQuery<GetOrderQuery, GetOrderQueryVariables>(
     GET_ORDER_QUERY,
     {
@@ -69,7 +85,18 @@ export const OrderPage = () => {
         },
       });
     }
-  }, [data]);
+  }, [data, id, subscribeToMore]);
+
+  const onEditOrderStatus = (newStatus: OrderStatus) => {
+    editOrder({
+      variables: {
+        input: {
+          id: +id,
+          status: newStatus,
+        },
+      },
+    });
+  };
 
   return (
     <div className="mt-32 container flex justify-center">
@@ -94,20 +121,49 @@ export const OrderPage = () => {
             Driver:&nbsp;
             <span className="font-medium">{data?.getOrder.order?.driver?.email || "Not yet"}</span>
           </div>
-          {userData?.me.role === "Client" && (
+          {userData?.me.role === UserRole.Client && (
             <span className=" text-center mt-5 mb-3  text-2xl text-green-600">
               Status: {data?.getOrder.order?.status}
             </span>
           )}
-          {userData?.me.role === "Owner" && (
+          {userData?.me.role === UserRole.Owner && (
             <>
-              {data?.getOrder.order?.status === "Pending" && (
-                <button className="button">Accept Order</button>
-              )}
-              {data?.getOrder.order?.status === "Cooking" && (
-                <button className="button">Ready to Pickup</button>
+              {data?.getOrder.order?.status === OrderStatus.Pending ? (
+                <button className="button" onClick={() => onEditOrderStatus(OrderStatus.Cooking)}>
+                  Accept Order
+                </button>
+              ) : data?.getOrder.order?.status === OrderStatus.Cooking ? (
+                <button className="button" onClick={() => onEditOrderStatus(OrderStatus.Cooked)}>
+                  Ready to Pickup
+                </button>
+              ) : (
+                <span className=" text-center mt-5 mb-3  text-2xl text-green-600">
+                  Status: {data?.getOrder.order?.status}
+                </span>
               )}
             </>
+          )}
+          {userData?.me.role === UserRole.Delivery && (
+            <>
+              {data?.getOrder.order?.status === OrderStatus.Cooked ? (
+                <button className="button" onClick={() => onEditOrderStatus(OrderStatus.PickedUp)}>
+                  Picked Up
+                </button>
+              ) : data?.getOrder.order?.status === OrderStatus.PickedUp ? (
+                <button className="button" onClick={() => onEditOrderStatus(OrderStatus.Delivered)}>
+                  Delivered
+                </button>
+              ) : (
+                <span className=" text-center mt-5 mb-3  text-2xl text-green-600">
+                  Status: {data?.getOrder.order?.status}
+                </span>
+              )}
+            </>
+          )}
+          {data?.getOrder.order?.status === OrderStatus.Delivered && (
+            <span className=" text-center mt-5 mb-3  text-2xl text-green-600">
+              Thank you for using Yuber Eats
+            </span>
           )}
         </div>
       </div>
