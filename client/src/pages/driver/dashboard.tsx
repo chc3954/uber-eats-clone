@@ -8,7 +8,7 @@ import {
   TakeOrderMutation,
   TakeOrderMutationVariables,
 } from "../../__generated__/graphql";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface ICoords {
   lat: number;

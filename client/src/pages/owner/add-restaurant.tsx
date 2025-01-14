@@ -9,12 +9,13 @@ import { Helmet } from "react-helmet";
 import { Back } from "../../components/back";
 import { useNavigate } from "react-router-dom";
 import { MY_RESTAURANTS_QUERY } from "./my-restaurants";
+import { useState } from "react";
 
 interface IFormProps {
   name: string;
   address: string;
   categoryName: string;
-  coverImg: string;
+  coverImg: FileList;
 }
 
 const CREATE_RESTAURANT_MUTATION = gql`
@@ -27,26 +28,25 @@ const CREATE_RESTAURANT_MUTATION = gql`
   }
 `;
 
-const temp_coverImg =
-  "https://tb-static.uber.com/prod/image-proc/processed_images/b2fdc84b16bbf90b9be3933889bba804/30be7d11a3ed6f6183354d1933fbb6c7.jpeg";
-
 export const AddRestaurantPage = () => {
   const client = useApolloClient();
   const navigate = useNavigate();
+  const [uploading, setUploading] = useState(false);
+  const [imgUrl, setImgUrl] = useState("");
   const {
     register,
     getValues,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { isValid },
   } = useForm<IFormProps>({
     mode: "onChange",
   });
-  const [createRestaurant, { loading, data }] = useMutation<
+  const [createRestaurant] = useMutation<
     CreateRestaurantMutation,
     CreateRestaurantMutationVariables
   >(CREATE_RESTAURANT_MUTATION, {
-    // refetchQueries: [{ query: MY_RESTAURANTS_QUERY }],
     onCompleted: (data: CreateRestaurantMutation) => {
+      setUploading(false);
       const { ok, restaurantId } = data.createRestaurant;
 
       if (ok) {
@@ -63,7 +63,7 @@ export const AddRestaurantPage = () => {
                   id: restaurantId,
                   name,
                   address,
-                  coverImg: temp_coverImg,
+                  coverImg: imgUrl,
                   category: {
                     __typename: "Category",
                     name: categoryName,
@@ -75,13 +75,24 @@ export const AddRestaurantPage = () => {
             },
           },
         });
-        navigate("/");
+        navigate(`/restaurants/${restaurantId}`);
       }
     },
   });
 
-  const onCreateRestaurant = () => {
+  const onCreateRestaurant = async () => {
+    setUploading(true);
     const { name, address, categoryName, coverImg } = getValues();
+    const coverImgFile = coverImg[0];
+    const formBody = new FormData();
+    formBody.append("file", coverImgFile);
+    const { url } = await (
+      await fetch("http://localhost:3000/uploads", {
+        method: "POST",
+        body: formBody,
+      })
+    ).json();
+    setImgUrl(url);
 
     createRestaurant({
       variables: {
@@ -89,7 +100,7 @@ export const AddRestaurantPage = () => {
           name,
           address,
           categoryName,
-          coverImg: temp_coverImg,
+          coverImg: url,
         },
       },
     });
@@ -129,7 +140,7 @@ export const AddRestaurantPage = () => {
             type="file"
             accept="image/*"
           />
-          <Button loading={loading} disable={!isValid} actionText="Create Restaurant" />
+          <Button loading={uploading} disable={!isValid} actionText="Create Restaurant" />
         </form>
       </div>
     </div>
